@@ -17,9 +17,7 @@ namespace Desu
           
      
             RegisterPerkProcessor(PerkHash.FlimFocus, DamagePerk);
-            RegisterPerkProcessor(PerkHash.RegainNano, RegainNano);
-            RegisterPerkProcessor(PerkHash.AccessNotumSource, NanoPerk);
-            RegisterPerkProcessor(PerkHash.NanoHeal, NanoPerk);
+ 
 
 
 

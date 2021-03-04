@@ -265,7 +265,7 @@ namespace Desu
                 }
 
 
-                if (player.FightingTarget != null && player.FightingTarget.IsPlayer && currentlyAttacking != player.FightingTarget.Name || player.FightingTarget != null && player.FightingTarget.Health > 50000 && currentlyAttacking != player.FightingTarget.Name)
+                if (player.FightingTarget != null && currentlyAttacking != player.FightingTarget.Name || player.FightingTarget != null && player.FightingTarget.Health > 50000 && currentlyAttacking != player.FightingTarget.Name )
                 {
                     DynelManager.LocalPlayer.Attack(player.FightingTarget, true);
 

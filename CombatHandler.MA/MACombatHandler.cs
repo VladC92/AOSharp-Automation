@@ -25,6 +25,11 @@ namespace Desu
             RegisterPerkProcessor(PerkHash.TremorHand, DamagePerk);
             RegisterPerkProcessor(PerkHash.FleshQuiver, DamagePerk);
             RegisterPerkProcessor(PerkHash.Obliterate, DamagePerk);
+            RegisterPerkProcessor(PerkHash.FollowupSmash, DamagePerk);
+            RegisterPerkProcessor(PerkHash.Crave, DamagePerk);
+            RegisterPerkProcessor(PerkHash.BlindsideBlow, DamagePerk);
+            RegisterPerkProcessor(PerkHash.LEProcMartialArtistAbsoluteFist, LEProc);
+            RegisterPerkProcessor(PerkHash.LEProcMartialArtistDebilitatingStrike, LEProc);
             RegisterPerkProcessor(PerkHash.RedDawn, RedDawnPerk, CombatActionPriority.High);
 
             //Spells

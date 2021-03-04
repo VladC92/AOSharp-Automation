@@ -5,20 +5,24 @@ using AOSharp.Common.GameData;
 using AOSharp.Core;
 using AOSharp.Core.Inventory;
 using AOSharp.Core.UI;
+using SmokeLounge.AOtomation.Messaging.Messages.N3Messages;
 
 namespace CombatHandler.Generic
 {
     public class GenericCombatHandler : AOSharp.Core.Combat.CombatHandler
     {
         private double _lastCombatTime = double.MinValue;
+        private bool stackEnabled = false;
+        private EquipSlot stackSlot;
         public int EvadeCycleTimeoutSeconds = 180;
         private Dictionary<PerkLine, int> _perkLineLevels;
 
         public GenericCombatHandler()
         {
-            _perkLineLevels = Perk.GetPerkLineLevels(true);
             Game.OnUpdate += OnUpdate;
             Game.TeleportEnded += TeleportEnded;
+
+            _perkLineLevels = Perk.GetPerkLineLevels(true);
 
             RegisterPerkProcessor(PerkHash.Limber, Limber, CombatActionPriority.High);
             RegisterPerkProcessor(PerkHash.DanceOfFools, DanceOfFools, CombatActionPriority.High);
@@ -44,7 +48,6 @@ namespace CombatHandler.Generic
             RegisterPerkProcessor(PerkHash.WitOfTheAtrox, TargetedDamagePerk, CombatActionPriority.High);
             RegisterPerkProcessor(PerkHash.EvasiveStance, SelfDefPerk, CombatActionPriority.Medium);
             RegisterPerkProcessor(PerkHash.DodgeTheBlame, SelfDefPerk, CombatActionPriority.High);
-            RegisterPerkProcessor(PerkHash.BodyTackle, TargetedDamagePerk);
 
 
 
@@ -97,6 +100,99 @@ namespace CombatHandler.Generic
                 case Breed.Atrox:
                     break;
             }
+
+            Chat.RegisterCommand("stack", StackCommand);
+
+        }
+        private void StackCommand(string command, string[] param, ChatWindow chatWindow)
+        {
+
+            if (param.Length == 0)
+            {
+                stackEnabled = true;
+                Chat.WriteLine("Stack command enabled for Hud3 (default)" , ChatColor.DarkPink);
+                stackSlot = EquipSlot.Weap_Hud3;
+                return;
+            }
+            if (param.Length == 1)
+            {
+                switch (param[0].ToLower())
+                {
+                    default:
+                    case "hud3":
+                        stackSlot = EquipSlot.Weap_Hud3;
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for slot "+ stackSlot.ToString());
+                        break;
+                    case "hud1":
+                        stackSlot = EquipSlot.Weap_Hud1;
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
+                        break;
+                    case "neck":
+                        stackSlot = EquipSlot.Cloth_Neck;
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
+                        break;
+                    case "chest":
+                    case "body":
+                        stackSlot = EquipSlot.Cloth_Body;
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
+                        break;
+                    case "lw":
+                    case "leftwrist":
+                        stackSlot = EquipSlot.Cloth_LeftWrist;
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
+                        break;
+                    case "lf":
+                    case "leftfinger":
+                        stackSlot = EquipSlot.Cloth_LeftFinger;
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
+                        break;
+                    case "la":
+                    case "leftarm":
+                        stackSlot = EquipSlot.Cloth_LeftArm;
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
+                        break;
+                    case "ra":
+                    case "rightarm":
+                        stackSlot = EquipSlot.Cloth_LeftArm;
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
+                        break;
+
+                    case "rf":
+                    case "rightfinger":
+                        stackSlot = EquipSlot.Cloth_RightFinger;
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
+                        break;
+
+                    case "rw":
+                    case "rightwrist":
+                        stackSlot = EquipSlot.Cloth_RightWrist;
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
+                        break;
+
+                    case "s":
+                    case "stop":
+                    case "off":
+                    case "o":
+                        stackEnabled = false;
+                        Chat.WriteLine("Stack command disabled" , ChatColor.Red);
+                        break;
+
+                }
+
+                
+                return;
+            }
+
         }
 
         protected bool GenericBuff(Spell spell, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
@@ -161,17 +257,83 @@ namespace CombatHandler.Generic
         {
             _lastCombatTime = double.MinValue;
         }
-
-        private void OnUpdate(object sender, float e)
+        private void StatStacker()
         {
-            if (DynelManager.LocalPlayer.GetStat(Stat.NumFightingOpponents) > 0)
+            List<Item> characterItems = Inventory.Items;
+            Container stackBag = Inventory.Backpacks.FirstOrDefault(x => x.IsOpen);
+            List<int> stackSlots = new List<int>() { 
+                (int) stackSlot
+                //(int)EquipSlot.Cloth_Neck,
+                //(int)EquipSlot.Weap_Hud1,
+                //(int)EquipSlot.Weap_Hud3,
+                //(int)EquipSlot.Cloth_Body,
+                //(int)EquipSlot.Cloth_LeftWrist,
+                //(int)EquipSlot.Cloth_LeftFinger 
+            };
+
+            if (stackBag != null)
             {
-                _lastCombatTime = Time.NormalTime;
+                foreach (Item item in characterItems)
+                {
+                    //Look for an item equiped to either of the slots we want to stack
+                    if (stackSlots.Contains(item.Slot.Instance))
+                    {
+                        //Chat.WriteLine($"{item.Name}::{item.HighId}");
+                        Identity stackBagId = stackBag.Identity;
+                        Identity bank = new Identity();
+                        bank.Type = IdentityType.BankByRef;
+                        bank.Instance = stackSlots.ElementAt(stackSlots.IndexOf(item.Slot.Instance));
+                        StripItem(bank, stackBag);
+                        return;
+                    }
+                     EquipItem(stackBag);
+                }
             }
         }
 
- 
-    protected bool LEProc(PerkAction perkAction, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
+        private static void StripItem(Identity bank, Container stackBag)
+        {
+            Network.Send(new ClientContainerAddItem()
+            {
+                Target = stackBag.Identity,
+                Source = bank
+            });
+        }
+
+        private void EquipItem(Container stackBag)
+        {
+            foreach (Item item in stackBag.Items)
+            {
+                if (Enum.IsDefined(typeof(StackItems), item.HighId))
+                {
+                    item.Equip((EquipSlot)stackSlot);
+                    //item.Equip(EquipSlot.Cloth_LeftFinger);
+                    //item.Equip(EquipSlot.Weap_Hud1);
+                    //item.Equip(EquipSlot.Weap_Hud3);
+                    //item.Equip(EquipSlot.Cloth_LeftWrist);
+                    //item.Equip(EquipSlot.Cloth_Body);
+                    //item.Equip(EquipSlot.Cloth_Neck);
+                    break;
+                }
+            }
+        }
+        private void OnUpdate(object sender, float e)
+        {
+
+             if (DynelManager.LocalPlayer.GetStat(Stat.NumFightingOpponents) > 0)
+            {
+                _lastCombatTime = Time.NormalTime;
+            }
+
+            if (stackEnabled == true)
+            {
+                StatStacker();
+            }
+
+        }
+
+
+        protected bool LEProc(PerkAction perkAction, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
     {
         foreach (Buff buff in DynelManager.LocalPlayer.Buffs.AsEnumerable())
         {
@@ -515,4 +677,79 @@ namespace CombatHandler.Generic
         public static readonly int CompositeRangedSpecial = 223348;
     }
 }
+}
+public enum StackItems
+{
+    //POH Stuff
+    AncientResorativeFungus = 302925,
+    AncientAggressiveWebbing = 302924,
+    AncientProtectiveDrone = 302923,
+
+    //Subway Huds
+    AmalgamatedResearchAttunementDevice = 305986,
+
+    //ACDC
+    AlienCombatDirectiveController = 267528,
+
+    //Tier 3 Research Attunement Devices
+    ResearchAttunementDeviceOffenseLevelThree = 269414,
+    ResearchAttunementDeviceTradeskillLevelThree = 293701,
+    ResearchAttunementDeviceHealthLevelThree = 269417,
+    ResearchAttunementDeviceNanoTechnologyLevelThree = 269405,
+    ResearchAttunementDeviceMedicalLevelThree = 269409,
+    ResearchAttunementDeviceDefenseLevelThree = 269411,
+    ResearchAttunementDeviceCombatLevelThree = 269403,
+
+    //Tier 2 Research Attunement Devices
+    ResearchAttunementDeviceOffenseLevelTwo = 269413,
+    ResearchAttunementDeviceHealthLevelTwo = 269416,
+    ResearchAttunementDeviceTradeskillLevelTwo = 293699,
+    ResearchAttunementDeviceCombatLevelTwo = 269402,
+    ResearchAttunementDeviceMedicalLevelTwo = 269408,
+    ResearchAttunementDeviceDefenseLevelTwo = 269410,
+    ResearchAttunementDeviceNanoTechnologyLevelTwo = 269404,
+
+    //Tier 1 Research Attunement Devices
+    ResearchAttunementDeviceDefenseLevelOne = 269412,
+    ResearchAttunementDeviceHealthLevelOne = 269418,
+    ResearchAttunementDeviceOffenseLevelOne = 269415,
+    ResearchAttunementDeviceNanoTechnologyLevelOne = 269406,
+    ResearchAttunementDeviceMedicalLevelOne = 269407,
+    ResearchAttunementDeviceCombatLevelOne = 269401,
+    ResearchAttunementDeviceTradeskillLevelOne = 293693,
+
+    //Clan Token Boards
+    ClanAdvancementSunrise = 296369,
+    ClanAdvancementDawn = 296368,
+    ClanAdvancementLateNight = 296367,
+    ClanAdvancementBlossomsofSummer = 296366,
+    ClanAdvancementLeavesofSpring = 296365,
+    ClanAdvancementTwigofHope = 296364,
+    ClanAdvancementDoubleSun = 296370,
+    ClanMeritsXanDefenseParagon = 279437,
+    ClanMeritsAwakenedCombatParagon = 302912,
+    ClanMeritsAwakenedDefenseParagon = 302914,
+
+    //Rings
+    QL200IQRing = 84145,
+    RingOfComputing = 238910,
+    RingOfComputing2 = 238911,
+    RingofDivineTeardrops = 238915,
+    RingOfEssence = 269190,
+    RingOfEssence2 = 269191,
+    NTProfRing = 267574,
+    XtremTechRingofCasting = 267559,
+    XtremTechRingofCasting2 = 268305,
+    XtremTechRingofCasting3 = 268306,
+    XtremTechRingofCasting4 = 267558,
+    RingofPlausibility = 260693,
+
+    // Other
+    NanoTargetingHelper = 269184,
+    MasterpieceAncientBracer = 267780,
+    DustBrigadeBracerThirdEdition = 292564
+
+
+
+
 }

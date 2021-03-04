@@ -37,13 +37,13 @@ namespace Desu
 
             //Spells
             RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.NullitySphereNano).OrderByStackingOrder(), NullitySphere, CombatActionPriority.High);
-         //   RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.AbsorbACBuff).OrderByStackingOrder(), GenericBuff, CombatActionPriority.High);
-          //  RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.NanoResistanceDebuff_LineA).OrderByStackingOrder(), ConstantBarrage, CombatActionPriority.Low);
+            RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.AbsorbACBuff).OrderByStackingOrder(), GenericBuff, CombatActionPriority.High);
+            RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.NanoResistanceDebuff_LineA).OrderByStackingOrder(), ConstantBarrage, CombatActionPriority.Low);
   
 
             RegisterSpellProcessor(RelevantNanos.NanobotAegis, NanobotAegis);
             RegisterSpellProcessor(RelevantNanos.IzgimmersWealth, IzgimmersWealth);
-           RegisterSpellProcessor(RelevantNanos.Garuk, SingleTargetNuke);
+            RegisterSpellProcessor(RelevantNanos.Garuk, SingleTargetNuke);
             RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.DOTNanotechnicianStrainA).OrderByStackingOrder(), AiDotNuke);
 
 
@@ -64,9 +64,7 @@ namespace Desu
 
             RegisterSpellProcessor(RelevantNanos.TacticalNuke, SingleTargetNuke);
             RegisterSpellProcessor(RelevantNanos.IzgimmersUltimatum, SingleTargetNuke);
-            RegisterSpellProcessor(RelevantNanos.DefilementofBeing , SingleTargetNuke);
-            RegisterSpellProcessor(RelevantNanos.IzgimmerCorrosiveTear , SingleTargetNuke);
-           RegisterSpellProcessor(RelevantNanos.OpticPlague, Blind , CombatActionPriority.High);
+            RegisterSpellProcessor(RelevantNanos.OpticPlague, Blind , CombatActionPriority.High);
 
 
 
@@ -75,7 +73,7 @@ namespace Desu
            // RegisterSpellProcessor(RelevantNanos.NotumOverload, GenericBuff);
             RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.Psy_IntBuff).OrderByStackingOrder(), GenericBuff);
             RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.Psy_IntBuff).OrderByStackingOrder(), GenericBuff);
-           RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.NanoOverTime_LineA).OrderByStackingOrder(), GenericBuff);
+            RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.NanoOverTime_LineA).OrderByStackingOrder(), GenericBuff);
       
             RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.NanoDamageMultiplierBuffs).OrderByStackingOrder(), GenericBuff);
             RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.NPCostBuff).OrderByStackingOrder(), GenericBuff);
@@ -188,8 +186,6 @@ namespace Desu
             public const int NanobotAegis = 302074;
             public const int IzgimmersWealth = 275024;
             public const int IzgimmersUltimatum = 218168;
-            public const int IzgimmerCorrosiveTear = 218158;
-            public const int DefilementofBeing = 218150;
             public const int Garuk = 275692;
             public const int TacticalNuke = 266287;
             public const int OpticPlague = 275697;

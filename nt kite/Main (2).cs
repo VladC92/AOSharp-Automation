@@ -5,13 +5,13 @@ using AOSharp.Core.UI;
 
 namespace Desu
 {
-    public class Main : IAOPluginEntry
+    public class Main : AOPluginEntry
     {
-        public void Run(string pluginDir)
+        public override void Run(string pluginDir)
         {
             try
             {
-                Chat.WriteLine("NtMic Combat Handler Loaded!" , AOSharp.Common.GameData.ChatColor.DarkPink);
+                Chat.WriteLine("NT Combat Handler Loaded!", AOSharp.Common.GameData.ChatColor.DarkPink);
                 AOSharp.Core.Combat.CombatHandler.Set(new NTCombatHandler());
             }
             catch (Exception e)
