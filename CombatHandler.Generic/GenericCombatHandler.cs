@@ -729,6 +729,8 @@ public enum StackItems
     ClanMeritsXanDefenseParagon = 279437,
     ClanMeritsAwakenedCombatParagon = 302912,
     ClanMeritsAwakenedDefenseParagon = 302914,
+    OmnitekHonorTriumphantFlagsofGloryandRedemption = 296379,
+
 
     //Rings
     QL200IQRing = 84145,
