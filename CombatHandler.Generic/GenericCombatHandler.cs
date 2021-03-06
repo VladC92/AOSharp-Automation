@@ -134,6 +134,11 @@ namespace CombatHandler.Generic
                         stackEnabled = true;
                         Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
                         break;
+                    case "utils3":
+                        stackSlot = EquipSlot.Weap_Utils3;
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
+                        break;
                     case "chest":
                     case "body":
                         stackSlot = EquipSlot.Cloth_Body;
