@@ -794,6 +794,8 @@ public enum StackItems
     PureNovictumRingfortheSupportUnit = 226288,
     PureNovictumRingfortheExterminationUnit = 226291,
     PureNovictumRingfortheInfantryUnit = 226307,
+    PureNovictumRingfortheControlUnit = 226290,
+    PureNovictumRingfortheArtilleryUnit = 226308,
 
 
 
