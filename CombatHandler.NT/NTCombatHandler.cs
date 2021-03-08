@@ -166,22 +166,6 @@ namespace Desu
 
             return true;
         }
-        private bool ConstantBarrage(Spell spell, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
-        {
-            if (!_menu.GetBool("UseCB"))
-                return false;
-
-            if (fightingTarget == null)
-                return false;
-
-            if (fightingTarget.Health > 100000)
-                return true;
-
-            if (fightingTarget.Buffs.Find(NanoLine.NanoResistanceDebuff_LineA, out Buff buff) && buff.RemainingTime > 5)
-                return false;
-
-            return true;
-        }
       
         private static class RelevantNanos
         {
