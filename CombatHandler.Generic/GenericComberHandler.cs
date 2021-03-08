@@ -14,6 +14,7 @@ namespace CombatHandler.Generic
         private double _lastCombatTime = double.MinValue;
         private bool stackEnabled = false;
         private EquipSlot stackSlot;
+        private bool stackLog = false;
         public int EvadeCycleTimeoutSeconds = 180;
         private Dictionary<PerkLine, int> _perkLineLevels;
 
@@ -110,7 +111,7 @@ namespace CombatHandler.Generic
             if (param.Length == 0)
             {
                 stackEnabled = true;
-                Chat.WriteLine("Stack command enabled for Hud3 (default)" , ChatColor.DarkPink);
+                Chat.WriteLine("Stack command enabled for Hud3 (default)");
                 stackSlot = EquipSlot.Weap_Hud3;
                 return;
             }
@@ -118,6 +119,28 @@ namespace CombatHandler.Generic
             {
                 switch (param[0].ToLower())
                 {
+                    case "bag":
+                    case "bags":
+                        List<Container> backpacks = Inventory.Backpacks;
+                        foreach (Container backpack in backpacks)
+                        {
+                            Chat.WriteLine($"{backpack.Slot} - IsOpen:{backpack.IsOpen}{((backpack.IsOpen) ? $" - Items:{backpack.Items.Count}" : "")}");
+                        }
+                        break;
+                    case "logs":
+                    case "log":
+                        stackLog = true;
+                        break;
+                    case "nolog":
+                        stackLog = false;
+                        break;
+                    case "boots":
+                    case "feet":
+                        stackSlot = EquipSlot.Cloth_Feet;
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
+                        break;
+
                     default:
                     case "hud3":
                         stackSlot = EquipSlot.Weap_Hud3;
@@ -129,13 +152,13 @@ namespace CombatHandler.Generic
                         stackEnabled = true;
                         Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
                         break;
-                    case "neck":
-                        stackSlot = EquipSlot.Cloth_Neck;
+                    case "hud2":
+                        stackSlot = EquipSlot.Weap_Hud2;
                         stackEnabled = true;
                         Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
                         break;
-                    case "utils3":
-                        stackSlot = EquipSlot.Weap_Utils3;
+                    case "neck":
+                        stackSlot = EquipSlot.Cloth_Neck;
                         stackEnabled = true;
                         Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
                         break;
@@ -154,6 +177,11 @@ namespace CombatHandler.Generic
                     case "lf":
                     case "leftfinger":
                         stackSlot = EquipSlot.Cloth_LeftFinger;
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
+                        break;
+                    case "utils3":
+                        stackSlot = EquipSlot.Weap_Utils3;
                         stackEnabled = true;
                         Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
                         break;
@@ -189,7 +217,7 @@ namespace CombatHandler.Generic
                     case "off":
                     case "o":
                         stackEnabled = false;
-                        Chat.WriteLine("Stack command disabled" , ChatColor.Red);
+                        Chat.WriteLine("Stack command disabled");
                         break;
 
                 }
@@ -287,7 +315,10 @@ namespace CombatHandler.Generic
                         Identity stackBagId = stackBag.Identity;
                         Identity bank = new Identity();
                         bank.Type = IdentityType.BankByRef;
-                        bank.Instance = stackSlots.ElementAt(stackSlots.IndexOf(item.Slot.Instance));
+                        int index = stackSlots.IndexOf(item.Slot.Instance);
+                        bank.Instance = stackSlots.ElementAt(index);
+                        if (stackLog == true)
+                            Chat.WriteLine($"Bank slot: {bank.Instance} :: Item: {item.Name} :: Bag slot: {stackBag.Slot}");
                         StripItem(bank, stackBag);
                         return;
                     }
@@ -326,13 +357,22 @@ namespace CombatHandler.Generic
         {
 
              if (DynelManager.LocalPlayer.GetStat(Stat.NumFightingOpponents) > 0)
-            {
+             {
                 _lastCombatTime = Time.NormalTime;
-            }
+             }
 
-            if (stackEnabled == true)
+
+            try
             {
-                StatStacker();
+                if (stackEnabled == true)
+                {
+                    StatStacker();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Chat.WriteLine(ex.ToString());
             }
 
         }
@@ -734,14 +774,15 @@ public enum StackItems
     ClanMeritsXanDefenseParagon = 279437,
     ClanMeritsAwakenedCombatParagon = 302912,
     ClanMeritsAwakenedDefenseParagon = 302914,
-    OmnitekHonorTriumphantFlagsofGloryandRedemption = 296379,
-
+    DocaholicRing = 288744,
+    DocaholicRing2 = 288745,
 
     //Rings
     QL200IQRing = 84145,
     RingOfComputing = 238910,
     RingOfComputing2 = 238911,
-    RingofDivineTeardrops = 238915,
+    RingofDivineTeardrops = 238914,
+    RingofDivineTeardrops2 = 238915,
     RingOfEssence = 269190,
     RingOfEssence2 = 269191,
     NTProfRing = 267574,
@@ -750,13 +791,25 @@ public enum StackItems
     XtremTechRingofCasting3 = 268306,
     XtremTechRingofCasting4 = 267558,
     RingofPlausibility = 260693,
+    PureNovictumRingfortheSupportUnit = 226288,
+    PureNovictumRingfortheExterminationUnit = 226291,
+    PureNovictumRingfortheInfantryUnit = 226307,
+
+
+
 
     // Other
     NanoTargetingHelper = 269184,
     MasterpieceAncientBracer = 267780,
-    DustBrigadeBracerThirdEdition = 292564
+    DustBrigadeBracerThirdEdition = 292564,
 
 
-
+    // nova dillon
+    NovaDillonBoots = 163941,
+    NovaDillonBoots2 = 163942,
+    NovaDillonArmorSleeves = 163943,
+    NovaDillonArmorSleeves2 = 163944,
+    NovaDillonArmorChest = 163945,
+    NovaDillonArmorChest2 = 163946
 
 }
