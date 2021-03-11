@@ -30,7 +30,7 @@ namespace CombatHandler.Engi
             RegisterPerkProcessor(PerkHash.PowerShock, DamagePerk);
             RegisterPerkProcessor(PerkHash.PowerBlast, DamagePerk);
             RegisterPerkProcessor(PerkHash.PowerCombo, DamagePerk);
-            RegisterPerkProcessor(PerkHash.LegShot, DamagePerk);
+           // RegisterPerkProcessor(PerkHash.LegShot, DamagePerk);
             RegisterPerkProcessor(PerkHash.EasyShot, DamagePerk);
             RegisterPerkProcessor(PerkHash.PointBlank, DamagePerk);
             RegisterPerkProcessor(PerkHash.QuickShot, DamagePerk);
