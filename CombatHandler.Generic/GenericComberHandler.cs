@@ -13,6 +13,7 @@ namespace CombatHandler.Generic
     {
         private double _lastCombatTime = double.MinValue;
         private bool stackEnabled = false;
+        private bool stackall = false;
         private EquipSlot stackSlot;
         private bool stackLog = false;
         public int EvadeCycleTimeoutSeconds = 180;
@@ -142,11 +143,7 @@ namespace CombatHandler.Generic
                         break;
 
                     default:
-                    case "hud3":
-                        stackSlot = EquipSlot.Weap_Hud3;
-                        stackEnabled = true;
-                        Chat.WriteLine("Stack enabled for slot "+ stackSlot.ToString());
-                        break;
+
                     case "hud1":
                         stackSlot = EquipSlot.Weap_Hud1;
                         stackEnabled = true;
@@ -204,6 +201,23 @@ namespace CombatHandler.Generic
                         stackEnabled = true;
                         Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
                         break;
+                    case "all":
+
+                        stackSlot = EquipSlot.Weap_Hud3;
+                        stackSlot = EquipSlot.Cloth_RightFinger;
+                        stackSlot = EquipSlot.Cloth_RightWrist;
+                        stackSlot = EquipSlot.Cloth_LeftArm;
+                        stackSlot = EquipSlot.Weap_Utils3;
+                        stackSlot = EquipSlot.Cloth_LeftFinger;
+                        stackSlot = EquipSlot.Cloth_LeftWrist;
+                        stackSlot = EquipSlot.Cloth_Body;
+                        stackSlot = EquipSlot.Cloth_Neck;
+
+                        stackSlot = EquipSlot.Weap_Hud1;
+                        stackSlot = EquipSlot.Cloth_Feet;
+                        stackall = true;
+                        Chat.WriteLine("Stack enabled for all avaliable slots ! ", ChatColor.Green);
+                        break;
 
                     case "rw":
                     case "rightwrist":
@@ -222,7 +236,7 @@ namespace CombatHandler.Generic
 
                 }
 
-                
+
                 return;
             }
 
@@ -294,7 +308,7 @@ namespace CombatHandler.Generic
         {
             List<Item> characterItems = Inventory.Items;
             Container stackBag = Inventory.Backpacks.FirstOrDefault(x => x.IsOpen);
-            List<int> stackSlots = new List<int>() { 
+            List<int> stackSlots = new List<int>() {
                 (int) stackSlot
                 //(int)EquipSlot.Cloth_Neck,
                 //(int)EquipSlot.Weap_Hud1,
@@ -322,7 +336,49 @@ namespace CombatHandler.Generic
                         StripItem(bank, stackBag);
                         return;
                     }
-                     EquipItem(stackBag);
+                    EquipItem(stackBag);
+                }
+            }
+        }
+        private void StatStackerAll()
+        {
+            List<Item> characterItems = Inventory.Items;
+            Container stackBag = Inventory.Backpacks.FirstOrDefault(x => x.IsOpen);
+            List<int> stackSlots = new List<int>() {
+
+            (int)EquipSlot.Cloth_Neck,
+            (int)EquipSlot.Weap_Hud1,
+            (int)EquipSlot.Weap_Hud3,
+            (int)EquipSlot.Cloth_Body,
+            (int)EquipSlot.Cloth_LeftWrist,
+            (int)EquipSlot.Cloth_LeftFinger ,
+            (int)EquipSlot.Cloth_RightFinger,
+            (int)EquipSlot.Cloth_RightWrist,
+            (int)EquipSlot.Cloth_LeftArm,
+            (int)EquipSlot.Weap_Utils3,
+
+            (int)EquipSlot.Cloth_Feet,
+        };
+
+            if (stackBag != null)
+            {
+                foreach (Item item in characterItems)
+                {
+                    //Look for an item equiped to either of the slots we want to stack
+                    if (stackSlots.Contains(item.Slot.Instance))
+                    {
+                        //Chat.WriteLine($"{item.Name}::{item.HighId}");
+                        Identity stackBagId = stackBag.Identity;
+                        Identity bank = new Identity();
+                        bank.Type = IdentityType.BankByRef;
+                        int index = stackSlots.IndexOf(item.Slot.Instance);
+                        bank.Instance = stackSlots.ElementAt(index);
+                        if (stackLog == true)
+                            Chat.WriteLine($"Bank slot: {bank.Instance} :: Item: {item.Name} :: Bag slot: {stackBag.Slot}");
+                        StripItem(bank, stackBag);
+                        return;
+                    }
+                    EquipItemAll(stackBag);
                 }
             }
         }
@@ -353,13 +409,37 @@ namespace CombatHandler.Generic
                 }
             }
         }
+        private void EquipItemAll(Container stackBag)
+        {
+            foreach (Item item in stackBag.Items)
+            {
+                if (Enum.IsDefined(typeof(StackItems), item.HighId))
+                {
+
+                    item.Equip(EquipSlot.Cloth_LeftFinger);
+                    item.Equip(EquipSlot.Weap_Hud1);
+                    item.Equip(EquipSlot.Weap_Hud3);
+                    item.Equip(EquipSlot.Cloth_LeftWrist);
+                    item.Equip(EquipSlot.Cloth_RightWrist);
+                    item.Equip(EquipSlot.Cloth_Body);
+                    item.Equip(EquipSlot.Cloth_Neck);
+                    item.Equip(EquipSlot.Cloth_Feet);
+                    item.Equip(EquipSlot.Weap_Utils3);
+                    item.Equip(EquipSlot.Cloth_LeftFinger);
+                    item.Equip(EquipSlot.Cloth_RightFinger);
+                    item.Equip(EquipSlot.Cloth_LeftArm);
+
+                    break;
+                }
+            }
+        }
         private void OnUpdate(object sender, float e)
         {
 
-             if (DynelManager.LocalPlayer.GetStat(Stat.NumFightingOpponents) > 0)
-             {
+            if (DynelManager.LocalPlayer.GetStat(Stat.NumFightingOpponents) > 0)
+            {
                 _lastCombatTime = Time.NormalTime;
-             }
+            }
 
 
             try
@@ -367,6 +447,10 @@ namespace CombatHandler.Generic
                 if (stackEnabled == true)
                 {
                     StatStacker();
+                }
+                if (stackall == true)
+                {
+                    StatStackerAll();
                 }
 
             }
@@ -379,349 +463,349 @@ namespace CombatHandler.Generic
 
 
         protected bool LEProc(PerkAction perkAction, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
-    {
-        foreach (Buff buff in DynelManager.LocalPlayer.Buffs.AsEnumerable())
         {
-            if (buff.Name == perkAction.Name)
+            foreach (Buff buff in DynelManager.LocalPlayer.Buffs.AsEnumerable())
             {
-                return false;
+                if (buff.Name == perkAction.Name)
+                {
+                    return false;
+                }
             }
+            return true;
         }
-        return true;
-    }
 
-    public bool HasBuff(Spell spell, SimpleChar target)
-    {
-        foreach (Buff buff in target.Buffs.AsEnumerable())
+        public bool HasBuff(Spell spell, SimpleChar target)
         {
-            if (spell.Nanoline == buff.Nanoline && spell.StackingOrder <= buff.StackingOrder)
+            foreach (Buff buff in target.Buffs.AsEnumerable())
             {
-                return true;
+                if (spell.Nanoline == buff.Nanoline && spell.StackingOrder <= buff.StackingOrder)
+                {
+                    return true;
+                }
             }
-        }
-        return false;
-    }
-
-    public bool TeamBuff(Spell spell, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
-    {
-        if (DynelManager.LocalPlayer.MovementState == MovementState.Sit)
             return false;
+        }
 
-        if (DynelManager.LocalPlayer.IsInTeam())
+        public bool TeamBuff(Spell spell, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
         {
-            SimpleChar teamMemberWithoutBuff = DynelManager.Characters
-                .Where(c => Team.Members.Select(t => t.Identity.Instance).Contains(c.Identity.Instance))
-                .Where(c => !HasBuff(spell, c))
-                .FirstOrDefault();
-            if (teamMemberWithoutBuff != null)
+            if (DynelManager.LocalPlayer.MovementState == MovementState.Sit)
+                return false;
+
+            if (DynelManager.LocalPlayer.IsInTeam())
             {
-                int currentNCU = teamMemberWithoutBuff.GetStat(Stat.CurrentNCU);
-                int maxNCU = teamMemberWithoutBuff.GetStat(Stat.MaxNCU);
+                SimpleChar teamMemberWithoutBuff = DynelManager.Characters
+                    .Where(c => Team.Members.Select(t => t.Identity.Instance).Contains(c.Identity.Instance))
+                    .Where(c => !HasBuff(spell, c))
+                    .FirstOrDefault();
+                if (teamMemberWithoutBuff != null)
+                {
+                    int currentNCU = teamMemberWithoutBuff.GetStat(Stat.CurrentNCU);
+                    int maxNCU = teamMemberWithoutBuff.GetStat(Stat.MaxNCU);
 
-                // MaxNCU is bugged, for a 12 NCU it gives -459 NCU, we need to adapt to calc exact NCU
+                    // MaxNCU is bugged, for a 12 NCU it gives -459 NCU, we need to adapt to calc exact NCU
 
-                int missingNCU = 459+255;
+                    int missingNCU = 459 + 255;
 
-                int baseNCU = 12;
+                    int baseNCU = 12;
 
-                maxNCU += missingNCU + baseNCU;
-                int remainingNCU = maxNCU - currentNCU;
+                    maxNCU += missingNCU + baseNCU;
+                    int remainingNCU = maxNCU - currentNCU;
 
-                Chat.WriteLine(teamMemberWithoutBuff.Name + " is missing " + spell.Name);
-                //if (remainingNCU > Math.Abs(spell.NCU))
-                //{
+                    Chat.WriteLine(teamMemberWithoutBuff.Name + " is missing " + spell.Name);
+                    //if (remainingNCU > Math.Abs(spell.NCU))
+                    //{
                     actionTarget.Target = teamMemberWithoutBuff;
                     return true;
-                //}
+                    //}
+                }
             }
+
+            return false;
         }
 
-        return false;
-    }
-
-    private bool FlowerOfLife(Item item, SimpleChar fightingtarget, ref (SimpleChar Target, bool ShouldSetTarget) actiontarget)
-    {
-        if (fightingtarget == null)
-            return false;
-
-        if (DynelManager.LocalPlayer.Cooldowns.ContainsKey(GetSkillLockStat(item)))
-            return false;
-
-        int approximateHealing = item.QualityLevel * 10;
-
-        return DynelManager.LocalPlayer.MissingHealth > approximateHealing;
-    }
-
-    private bool HealthAndNanoStim(Item item, SimpleChar fightingtarget, ref (SimpleChar Target, bool ShouldSetTarget) actiontarget)
-    {
-        if (fightingtarget == null)
-            return false;
-
-        if (DynelManager.LocalPlayer.Cooldowns.ContainsKey(GetSkillLockStat(item)))
-            return false;
-
-        actiontarget.ShouldSetTarget = true;
-        actiontarget.Target = DynelManager.LocalPlayer;
-
-        int approximateHealing = item.QualityLevel * 10;
-
-        return DynelManager.LocalPlayer.MissingHealth > approximateHealing || DynelManager.LocalPlayer.MissingNano > approximateHealing;
-    }
-    private bool ExperienceStim(Item item, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
-    {
-        if (DynelManager.LocalPlayer.Cooldowns.ContainsKey(Stat.FirstAid))
-            return false;
-
-        actionTarget.Target = DynelManager.LocalPlayer;
-        actionTarget.ShouldSetTarget = false;
-        return true;
-
-    }
-    private bool SitKit(Item item, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
-    {
-        if (DynelManager.LocalPlayer.Cooldowns.ContainsKey(Stat.Treatment))
-            return false;
-
-        if (DynelManager.LocalPlayer.HealthPercent > 65 && DynelManager.LocalPlayer.NanoPercent > 65)
-            return false;
-
-        actionTarget.Target = DynelManager.LocalPlayer;
-        actionTarget.ShouldSetTarget = true;
-        return true;
-
-    }
-
-
-
-    private bool FountainOfLife(Spell spell, SimpleChar fightingtarget, ref (SimpleChar Target, bool ShouldSetTarget) actiontarget)
-    {
-        // Prioritize keeping ourself alive
-        if (DynelManager.LocalPlayer.HealthPercent <= 30)
+        private bool FlowerOfLife(Item item, SimpleChar fightingtarget, ref (SimpleChar Target, bool ShouldSetTarget) actiontarget)
         {
+            if (fightingtarget == null)
+                return false;
+
+            if (DynelManager.LocalPlayer.Cooldowns.ContainsKey(GetSkillLockStat(item)))
+                return false;
+
+            int approximateHealing = item.QualityLevel * 10;
+
+            return DynelManager.LocalPlayer.MissingHealth > approximateHealing;
+        }
+
+        private bool HealthAndNanoStim(Item item, SimpleChar fightingtarget, ref (SimpleChar Target, bool ShouldSetTarget) actiontarget)
+        {
+            if (fightingtarget == null)
+                return false;
+
+            if (DynelManager.LocalPlayer.Cooldowns.ContainsKey(GetSkillLockStat(item)))
+                return false;
+
+            actiontarget.ShouldSetTarget = true;
             actiontarget.Target = DynelManager.LocalPlayer;
+
+            int approximateHealing = item.QualityLevel * 10;
+
+            return DynelManager.LocalPlayer.MissingHealth > approximateHealing || DynelManager.LocalPlayer.MissingNano > approximateHealing;
+        }
+        private bool ExperienceStim(Item item, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
+        {
+            if (DynelManager.LocalPlayer.Cooldowns.ContainsKey(Stat.FirstAid))
+                return false;
+
+            actionTarget.Target = DynelManager.LocalPlayer;
+            actionTarget.ShouldSetTarget = false;
             return true;
+
+        }
+        private bool SitKit(Item item, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
+        {
+            if (DynelManager.LocalPlayer.Cooldowns.ContainsKey(Stat.Treatment))
+                return false;
+
+            if (DynelManager.LocalPlayer.HealthPercent > 65 && DynelManager.LocalPlayer.NanoPercent > 65)
+                return false;
+
+            actionTarget.Target = DynelManager.LocalPlayer;
+            actionTarget.ShouldSetTarget = true;
+            return true;
+
         }
 
-        // Try to keep our teammates alive if we're in a team
-        if (DynelManager.LocalPlayer.IsInTeam())
-        {
-            SimpleChar dyingTeamMember = DynelManager.Characters
-                .Where(c => c.IsAlive)
-                .Where(c => Team.Members.Select(t => t.Identity.Instance).Contains(c.Identity.Instance))
-                .Where(c => c.HealthPercent < 30)
-                .OrderByDescending(c => c.GetStat(Stat.NumFightingOpponents))
-                .FirstOrDefault();
 
-            if (dyingTeamMember != null)
+
+        private bool FountainOfLife(Spell spell, SimpleChar fightingtarget, ref (SimpleChar Target, bool ShouldSetTarget) actiontarget)
+        {
+            // Prioritize keeping ourself alive
+            if (DynelManager.LocalPlayer.HealthPercent <= 30)
             {
-                actiontarget.Target = dyingTeamMember;
+                actiontarget.Target = DynelManager.LocalPlayer;
                 return true;
             }
+
+            // Try to keep our teammates alive if we're in a team
+            if (DynelManager.LocalPlayer.IsInTeam())
+            {
+                SimpleChar dyingTeamMember = DynelManager.Characters
+                    .Where(c => c.IsAlive)
+                    .Where(c => Team.Members.Select(t => t.Identity.Instance).Contains(c.Identity.Instance))
+                    .Where(c => c.HealthPercent < 30)
+                    .OrderByDescending(c => c.GetStat(Stat.NumFightingOpponents))
+                    .FirstOrDefault();
+
+                if (dyingTeamMember != null)
+                {
+                    actiontarget.Target = dyingTeamMember;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        private bool SelfDefPerk(PerkAction perkaction, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
+        {
+            if (DynelManager.LocalPlayer.HealthPercent <= 50)
+
+                return true;
+
+            return false;
         }
 
-        return false;
-    }
-    private bool SelfDefPerk(PerkAction perkaction, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
-    {
-        if (DynelManager.LocalPlayer.HealthPercent <= 50)
+        private bool EnduranceBooster(Item item, SimpleChar fightingtarget, ref (SimpleChar Target, bool ShouldSetTarget) actiontarget)
+        {
+            // don't use if skill is locked (we will add this dynamically later)
+            if (DynelManager.LocalPlayer.Cooldowns.ContainsKey(Stat.Strength))
+                return false;
 
-            return true;
+            // don't use if we're above 40%
+            if (DynelManager.LocalPlayer.HealthPercent > 40)
+                return false;
 
-        return false;
-    }
+            // don't use if nothing is fighting us
+            if (DynelManager.LocalPlayer.GetStat(Stat.NumFightingOpponents) == 0)
+                return false;
 
-    private bool EnduranceBooster(Item item, SimpleChar fightingtarget, ref (SimpleChar Target, bool ShouldSetTarget) actiontarget)
-    {
-        // don't use if skill is locked (we will add this dynamically later)
-        if (DynelManager.LocalPlayer.Cooldowns.ContainsKey(Stat.Strength))
-            return false;
-
-        // don't use if we're above 40%
-        if (DynelManager.LocalPlayer.HealthPercent > 40)
-            return false;
-
-        // don't use if nothing is fighting us
-        if (DynelManager.LocalPlayer.GetStat(Stat.NumFightingOpponents) == 0)
-            return false;
-
-        // don't use if we have another major absorb running
-        // we could check remaining absorb stat to be slightly more effective
-        if (DynelManager.LocalPlayer.Buffs.Contains(NanoLine.BioCocoon))
-            return false;
+            // don't use if we have another major absorb running
+            // we could check remaining absorb stat to be slightly more effective
+            if (DynelManager.LocalPlayer.Buffs.Contains(NanoLine.BioCocoon))
+                return false;
             if (DynelManager.LocalPlayer.IsAttacking)
                 DynelManager.LocalPlayer.Pets.Attack(fightingtarget.Identity);
 
             return true;
-    }
+        }
 
-    protected virtual bool TargetedDamagePerk(PerkAction perkaction, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
-    {
-        actionTarget.ShouldSetTarget = true;
-        return DamagePerk(perkaction, fightingTarget, ref actionTarget);
-    }
-
-    protected virtual bool DamagePerk(PerkAction perkaction, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
-    {
-        if (fightingTarget == null)
-            return false;
-
-        if (fightingTarget.Health > 50000)
-            return true;
-
-        if (fightingTarget.HealthPercent < 5)
-            return false;
-
-        return true;
-    }
-    protected virtual bool Sacrifice(PerkAction perkAction, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
-    {
-        if (fightingTarget == null)
-            return false;
-
-        if (fightingTarget.Health > 1000000 && fightingTarget.HealthPercent <= 30)
-            return true;
-
-        if (fightingTarget.HealthPercent < 5)
-            return false;
-
-        return false;
-    }
-
-    protected virtual bool TargetedDamageItem(Item item, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
-    {
-        actionTarget.ShouldSetTarget = true;
-        return DamageItem(item, fightingTarget, ref actionTarget);
-    }
-
-    protected virtual bool DamageItem(Item item, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
-    {
-        if (fightingTarget == null)
-            return false;
-
-        if (DynelManager.LocalPlayer.Cooldowns.ContainsKey(GetSkillLockStat(item)))
-            return false;
-
-        return true;
-    }
-
-    protected virtual bool Coffee(Item item, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
-    {
-        if (!DynelManager.LocalPlayer.Buffs.Contains(NanoLine.FoodandDrinkBuffs))
-            return DamageItem(item, fightingTarget, ref actionTarget);
-
-        return false;
-    }
-
-    private bool Limber(PerkAction perkaction, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
-    {
-        if (fightingTarget == null)
-            return false;
-        if (DynelManager.LocalPlayer.Buffs.Find(RelevantNanos.DanceOfFools, out Buff dof) && dof.RemainingTime > 12.5f)
-            return false;
-
-        // stop cycling if we haven't fought anything for over 10 minutes
-        if (Time.NormalTime - _lastCombatTime > EvadeCycleTimeoutSeconds)
-            return false;
-
-        return true;
-    }
-
-    private bool DanceOfFools(PerkAction perkaction, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
-    {
-        if (fightingTarget == null)
-            return false;
-        if (!DynelManager.LocalPlayer.Buffs.Find(RelevantNanos.Limber, out Buff limber) || limber.RemainingTime > 12.5f)
-            return false;
-
-        // stop cycling if we haven't fought anything for over 10 minutes
-        if (Time.NormalTime - _lastCombatTime > EvadeCycleTimeoutSeconds)
-            return false;
-
-        return true;
-    }
-
-    // This will eventually be done dynamically but for now I will implement
-    // it statically so we can have it functional
-    private Stat GetSkillLockStat(Item item)
-    {
-        switch (item.HighId)
+        protected virtual bool TargetedDamagePerk(PerkAction perkaction, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
         {
-            case RelevantItems.UponAWaveOfSummerLow:
-            case RelevantItems.UponAWaveOfSummerHigh:
-                return Stat.Riposte;
-            case RelevantItems.FlowerOfLifeLow:
-            case RelevantItems.FlowerOfLifeHigh:
-                return Stat.MartialArts;
-            case RelevantItems.HealthAndNanoStimLow:
-            case RelevantItems.HealthAndNanoStimHigh:
-                return Stat.FirstAid;
-            case RelevantItems.FlurryOfBlowsLow:
-            case RelevantItems.FlurryOfBlowsHigh:
-                return Stat.AggDef;
-            case RelevantItems.StrengthOfTheImmortal:
-            case RelevantItems.MightOfTheRevenant:
-            case RelevantItems.BarrowStrength:
-                return Stat.Strength;
-            case RelevantItems.MeteoriteSpikes:
-            case RelevantItems.LavaCapsule:
-            case RelevantItems.KizzermoleGumboil:
-                return Stat.SharpObject;
-            case RelevantItems.SteamingHotCupOfEnhancedCoffee:
-                return Stat.RunSpeed;
-            case RelevantItems.GnuffsEternalRiftCrystal:
-                return Stat.MapNavigation;
-            case RelevantItems.Xpcan:
-                return Stat.XP;
-            default:
-                throw new Exception($"No skill lock stat defined for item id {item.HighId}");
+            actionTarget.ShouldSetTarget = true;
+            return DamagePerk(perkaction, fightingTarget, ref actionTarget);
+        }
+
+        protected virtual bool DamagePerk(PerkAction perkaction, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
+        {
+            if (fightingTarget == null)
+                return false;
+
+            if (fightingTarget.Health > 50000)
+                return true;
+
+            if (fightingTarget.HealthPercent < 5)
+                return false;
+
+            return true;
+        }
+        protected virtual bool Sacrifice(PerkAction perkAction, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
+        {
+            if (fightingTarget == null)
+                return false;
+
+            if (fightingTarget.Health > 1000000 && fightingTarget.HealthPercent <= 30)
+                return true;
+
+            if (fightingTarget.HealthPercent < 5)
+                return false;
+
+            return false;
+        }
+
+        protected virtual bool TargetedDamageItem(Item item, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
+        {
+            actionTarget.ShouldSetTarget = true;
+            return DamageItem(item, fightingTarget, ref actionTarget);
+        }
+
+        protected virtual bool DamageItem(Item item, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
+        {
+            if (fightingTarget == null)
+                return false;
+
+            if (DynelManager.LocalPlayer.Cooldowns.ContainsKey(GetSkillLockStat(item)))
+                return false;
+
+            return true;
+        }
+
+        protected virtual bool Coffee(Item item, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
+        {
+            if (!DynelManager.LocalPlayer.Buffs.Contains(NanoLine.FoodandDrinkBuffs))
+                return DamageItem(item, fightingTarget, ref actionTarget);
+
+            return false;
+        }
+
+        private bool Limber(PerkAction perkaction, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
+        {
+            if (fightingTarget == null)
+                return false;
+            if (DynelManager.LocalPlayer.Buffs.Find(RelevantNanos.DanceOfFools, out Buff dof) && dof.RemainingTime > 12.5f)
+                return false;
+
+            // stop cycling if we haven't fought anything for over 10 minutes
+            if (Time.NormalTime - _lastCombatTime > EvadeCycleTimeoutSeconds)
+                return false;
+
+            return true;
+        }
+
+        private bool DanceOfFools(PerkAction perkaction, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
+        {
+            if (fightingTarget == null)
+                return false;
+            if (!DynelManager.LocalPlayer.Buffs.Find(RelevantNanos.Limber, out Buff limber) || limber.RemainingTime > 12.5f)
+                return false;
+
+            // stop cycling if we haven't fought anything for over 10 minutes
+            if (Time.NormalTime - _lastCombatTime > EvadeCycleTimeoutSeconds)
+                return false;
+
+            return true;
+        }
+
+        // This will eventually be done dynamically but for now I will implement
+        // it statically so we can have it functional
+        private Stat GetSkillLockStat(Item item)
+        {
+            switch (item.HighId)
+            {
+                case RelevantItems.UponAWaveOfSummerLow:
+                case RelevantItems.UponAWaveOfSummerHigh:
+                    return Stat.Riposte;
+                case RelevantItems.FlowerOfLifeLow:
+                case RelevantItems.FlowerOfLifeHigh:
+                    return Stat.MartialArts;
+                case RelevantItems.HealthAndNanoStimLow:
+                case RelevantItems.HealthAndNanoStimHigh:
+                    return Stat.FirstAid;
+                case RelevantItems.FlurryOfBlowsLow:
+                case RelevantItems.FlurryOfBlowsHigh:
+                    return Stat.AggDef;
+                case RelevantItems.StrengthOfTheImmortal:
+                case RelevantItems.MightOfTheRevenant:
+                case RelevantItems.BarrowStrength:
+                    return Stat.Strength;
+                case RelevantItems.MeteoriteSpikes:
+                case RelevantItems.LavaCapsule:
+                case RelevantItems.KizzermoleGumboil:
+                    return Stat.SharpObject;
+                case RelevantItems.SteamingHotCupOfEnhancedCoffee:
+                    return Stat.RunSpeed;
+                case RelevantItems.GnuffsEternalRiftCrystal:
+                    return Stat.MapNavigation;
+                case RelevantItems.Xpcan:
+                    return Stat.XP;
+                default:
+                    throw new Exception($"No skill lock stat defined for item id {item.HighId}");
+            }
+        }
+
+        private static class RelevantItems
+        {
+            public const int FlurryOfBlowsLow = 85907;
+            public const int FlurryOfBlowsHigh = 85908;
+            public const int StrengthOfTheImmortal = -1;
+            public const int MightOfTheRevenant = 206013;
+            public const int BarrowStrength = 204653;
+            public const int LavaCapsule = 245990;
+            public const int KizzermoleGumboil = 245323;
+            public const int SteamingHotCupOfEnhancedCoffee = 157296;
+            public const int DreadlochEnduranceBooster = 267168;
+            public const int DreadlochEnduranceBoosterNanomageEdition = 267167;
+            public const int MeteoriteSpikes = 244204;
+            public const int FlowerOfLifeLow = 70614;
+            public const int FlowerOfLifeHigh = 204326;
+            public const int UponAWaveOfSummerLow = 205405;
+            public const int UponAWaveOfSummerHigh = 205406;
+            public const int GnuffsEternalRiftCrystal = 303179;
+            public const int HealthAndNanoStimLow = 291043;
+            public const int HealthAndNanoStimHigh = 291044;
+            public const int Xpcan = 288771;
+            public const int Xpcan1 = 288772;
+            public const int ExperienceStim = 288769;
+            public const int PremSitKit = 297274;
+            public const int SitKit1 = 291082;
+            public const int SitKit100 = 291083;
+            public const int SitKit200 = 291084;
+            public const int SitKit300 = 293296;
+
+
+        }
+
+
+        private static class RelevantNanos
+        {
+            public const int FountainOfLife = 302907;
+            public const int DanceOfFools = 210159;
+            public const int Limber = 210158;
+            public const int CompositeRangedExpertise = 223348;
+            public static readonly int CompositeAttributes = 223372;
+            public static readonly int CompositeNano = 223380;
+            public static readonly int CompositeRanged = 223364;
+            public static readonly int CompositeRangedSpecial = 223348;
         }
     }
-
-    private static class RelevantItems
-    {
-        public const int FlurryOfBlowsLow = 85907;
-        public const int FlurryOfBlowsHigh = 85908;
-        public const int StrengthOfTheImmortal = -1;
-        public const int MightOfTheRevenant = 206013;
-        public const int BarrowStrength = 204653;
-        public const int LavaCapsule = 245990;
-        public const int KizzermoleGumboil = 245323;
-        public const int SteamingHotCupOfEnhancedCoffee = 157296;
-        public const int DreadlochEnduranceBooster = 267168;
-        public const int DreadlochEnduranceBoosterNanomageEdition = 267167;
-        public const int MeteoriteSpikes = 244204;
-        public const int FlowerOfLifeLow = 70614;
-        public const int FlowerOfLifeHigh = 204326;
-        public const int UponAWaveOfSummerLow = 205405;
-        public const int UponAWaveOfSummerHigh = 205406;
-        public const int GnuffsEternalRiftCrystal = 303179;
-        public const int HealthAndNanoStimLow = 291043;
-        public const int HealthAndNanoStimHigh = 291044;
-        public const int Xpcan = 288771;
-        public const int Xpcan1 = 288772;
-        public const int ExperienceStim = 288769;
-        public const int PremSitKit = 297274;
-        public const int SitKit1 = 291082;
-        public const int SitKit100 = 291083;
-        public const int SitKit200 = 291084;
-        public const int SitKit300 = 293296;
-
-
-    }
-
-
-    private static class RelevantNanos
-    {
-        public const int FountainOfLife = 302907;
-        public const int DanceOfFools = 210159;
-        public const int Limber = 210158;
-        public const int CompositeRangedExpertise = 223348;
-        public static readonly int CompositeAttributes = 223372;
-        public static readonly int CompositeNano = 223380;
-        public static readonly int CompositeRanged = 223364;
-        public static readonly int CompositeRangedSpecial = 223348;
-    }
-}
 }
 public enum StackItems
 {
