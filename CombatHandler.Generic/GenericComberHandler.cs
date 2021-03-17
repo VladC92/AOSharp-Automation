@@ -13,9 +13,15 @@ namespace CombatHandler.Generic
     {
         private double _lastCombatTime = double.MinValue;
         private bool stackEnabled = false;
+        private bool dupeEnabled = false;
         private bool stackall = false;
         private EquipSlot stackSlot;
+        bool innerBagFound = false;
+        bool outerBagFound = false;
         private bool stackLog = false;
+        public Container innerBag;
+        public Container outerBag;
+
         public int EvadeCycleTimeoutSeconds = 180;
         private Dictionary<PerkLine, int> _perkLineLevels;
 
@@ -104,18 +110,78 @@ namespace CombatHandler.Generic
             }
 
             Chat.RegisterCommand("stack", StackCommand);
+            Chat.RegisterCommand("dupe", StackCommand);
 
         }
         private void StackCommand(string command, string[] param, ChatWindow chatWindow)
         {
-
-            if (param.Length == 0)
+            try
             {
-                stackEnabled = true;
-                Chat.WriteLine("Stack command enabled for Hud3 (default)");
-                stackSlot = EquipSlot.Weap_Hud3;
-                return;
+                if (param.Length == 0)
+                {
+                    Chat.WriteLine("Dupe bags exploit enabled", ChatColor.Green);
+                    List<Container> backpacks = Inventory.Backpacks;
+                    foreach (Container backpack in backpacks)
+                    {
+                        Chat.WriteLine($"Searching for bags....");
+                        if (backpack.Slot.Instance == (int)EquipSlot.Social_Back)
+                        {
+                            Chat.WriteLine($"   Inner Bag - {backpack.Identity} - IsOpen:{backpack.IsOpen}{((backpack.IsOpen) ? $" - Items:{backpack.Items.Count}" : "")}");
+                            innerBag = backpack;
+                            innerBagFound = true;
+                        }
+
+
+
+                        if (innerBagFound && outerBagFound)
+                        {
+                            Chat.WriteLine($"", ChatColor.Green);
+                            Chat.WriteLine($"====================================================", ChatColor.Green);
+                            Chat.WriteLine($"   Succes!!", ChatColor.Green);
+                            Chat.WriteLine($"", ChatColor.Green);
+                            Chat.WriteLine($"   Forcing {innerBag.Identity} into {outerBag.Identity}", ChatColor.Green);
+                            Chat.WriteLine($"====================================================", ChatColor.Green);
+                            Identity bank = new Identity();
+                            bank.Instance = (int)EquipSlot.Social_Back;
+                            bank.Type = IdentityType.BankByRef;
+
+                            Network.Send(new ClientContainerAddItem()
+                            {
+                                Target = outerBag.Identity,
+                                Source = bank
+                            });
+                            return;
+                        }
+
+                        Chat.WriteLine($"", ChatColor.Red);
+                        Chat.WriteLine($"====================================================", ChatColor.Red);
+                        Chat.WriteLine($"   FAILED!", ChatColor.Red);
+                        Chat.WriteLine($"====================================================", ChatColor.Red);
+                        Chat.WriteLine($"You must have a container on your social back slot!", ChatColor.Red);
+                        Chat.WriteLine($"You must remove everything from bank and occupy the first 40 slots with med packs (Before putting anything back inside!)!", ChatColor.Red);
+                        Chat.WriteLine($"You must have a bank terminal open!", ChatColor.Red);
+                        Chat.WriteLine($"You must have SINGLE a bag open in your inventory!", ChatColor.Red);
+
+
+
+                    }
+                    foreach (Container backpack in backpacks)
+                    {
+                        if (backpack.Slot.Instance != (int)EquipSlot.Social_Back && backpack.IsOpen)
+                        {
+                            //   Chat.WriteLine($"   Outer Bag - {backpack.Identity} - IsOpen:{backpack.IsOpen}{((backpack.IsOpen) ? $" - Items:{backpack.Items.Count}" : "")}");
+                            outerBag = backpack;
+                            outerBagFound = true;
+                        }
+                    }
+                }
             }
+            catch (Exception e)
+            {
+                Chat.WriteLine(e.Message);
+            }
+
+
             if (param.Length == 1)
             {
                 switch (param[0].ToLower())
@@ -153,6 +219,11 @@ namespace CombatHandler.Generic
                         stackSlot = EquipSlot.Weap_Hud2;
                         stackEnabled = true;
                         Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
+                        break;
+                    case "hud3":
+                        stackEnabled = true;
+                        stackSlot = EquipSlot.Weap_Hud3;
+                        Chat.WriteLine("Stack command enabled for Hud3", ChatColor.DarkPink);
                         break;
                     case "neck":
                         stackSlot = EquipSlot.Cloth_Neck;
@@ -416,18 +487,18 @@ namespace CombatHandler.Generic
                 if (Enum.IsDefined(typeof(StackItems), item.HighId))
                 {
 
-                    item.Equip(EquipSlot.Cloth_LeftFinger);
+                    //  item.Equip(EquipSlot.Cloth_LeftFinger);
                     item.Equip(EquipSlot.Weap_Hud1);
                     item.Equip(EquipSlot.Weap_Hud3);
-                    item.Equip(EquipSlot.Cloth_LeftWrist);
-                    item.Equip(EquipSlot.Cloth_RightWrist);
-                    item.Equip(EquipSlot.Cloth_Body);
+                    //   item.Equip(EquipSlot.Cloth_LeftWrist);
+                    //  item.Equip(EquipSlot.Cloth_RightWrist);
+                    //item.Equip(EquipSlot.Cloth_Body);
                     item.Equip(EquipSlot.Cloth_Neck);
-                    item.Equip(EquipSlot.Cloth_Feet);
+                    // item.Equip(EquipSlot.Cloth_Feet);
                     item.Equip(EquipSlot.Weap_Utils3);
-                    item.Equip(EquipSlot.Cloth_LeftFinger);
-                    item.Equip(EquipSlot.Cloth_RightFinger);
-                    item.Equip(EquipSlot.Cloth_LeftArm);
+                    // item.Equip(EquipSlot.Cloth_LeftFinger);
+                    // item.Equip(EquipSlot.Cloth_RightFinger);
+                    //item.Equip(EquipSlot.Cloth_LeftArm);
 
                     break;
                 }
