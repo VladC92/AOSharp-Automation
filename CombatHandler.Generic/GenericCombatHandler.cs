@@ -13,17 +13,15 @@ namespace CombatHandler.Generic
     {
         private double _lastCombatTime = double.MinValue;
         private bool stackEnabled = false;
-        private bool dupeEnabled = false;
-        private bool stackall = false;
         private EquipSlot stackSlot;
-        bool innerBagFound = false;
-        bool outerBagFound = false;
         private bool stackLog = false;
-        public Container innerBag;
-        public Container outerBag;
-
         public int EvadeCycleTimeoutSeconds = 180;
         private Dictionary<PerkLine, int> _perkLineLevels;
+
+        bool innerBagFound = false;
+        bool outerBagFound = false;
+        public Container innerBag;
+        public Container outerBag;
 
         public GenericCombatHandler()
         {
@@ -85,6 +83,9 @@ namespace CombatHandler.Generic
             RegisterSpellProcessor(RelevantNanos.CompositeRanged, GenericBuff);
             RegisterSpellProcessor(RelevantNanos.CompositeRangedSpecial, GenericBuff);
             RegisterSpellProcessor(RelevantNanos.CompositeRangedExpertise, GenericBuff);
+            RegisterSpellProcessor(RelevantNanos.InvocationofthePhoenix, Invocation);
+            RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.SingleTargetHealing).OrderByStackingOrder(), SelfHeal); ;
+            RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.SingleTargetHealing).OrderByStackingOrder(), SelfHeal); ;
             RegisterItemProcessor(RelevantItems.ExperienceStim, RelevantItems.ExperienceStim, ExperienceStim);
 
             RegisterItemProcessor(RelevantItems.PremSitKit, RelevantItems.PremSitKit, SitKit);
@@ -110,10 +111,9 @@ namespace CombatHandler.Generic
             }
 
             Chat.RegisterCommand("stack", StackCommand);
-            Chat.RegisterCommand("dupe", StackCommand);
-
+            Chat.RegisterCommand("dupe", DupeCommand);
         }
-        private void StackCommand(string command, string[] param, ChatWindow chatWindow)
+        private void DupeCommand(string command, string[] param, ChatWindow chatWindow)
         {
             try
             {
@@ -124,6 +124,8 @@ namespace CombatHandler.Generic
                     foreach (Container backpack in backpacks)
                     {
                         Chat.WriteLine($"Searching for bags....");
+                        Chat.WriteLine($"Found bag in {backpack.Slot.Instance}, expected {(int)EquipSlot.Social_Back}");
+
                         if (backpack.Slot.Instance == (int)EquipSlot.Social_Back)
                         {
                             Chat.WriteLine($"   Inner Bag - {backpack.Identity} - IsOpen:{backpack.IsOpen}{((backpack.IsOpen) ? $" - Items:{backpack.Items.Count}" : "")}");
@@ -180,8 +182,19 @@ namespace CombatHandler.Generic
             {
                 Chat.WriteLine(e.Message);
             }
+        
+        }
 
+        private void StackCommand(string command, string[] param, ChatWindow chatWindow)
+        {
 
+            if (param.Length == 0)
+            {
+                stackEnabled = true;
+                Chat.WriteLine("Stack command enabled for Hud3 (default)");
+                stackSlot = EquipSlot.Weap_Hud3;
+                return;
+            }
             if (param.Length == 1)
             {
                 switch (param[0].ToLower())
@@ -202,6 +215,8 @@ namespace CombatHandler.Generic
                         stackLog = false;
                         break;
                     case "boots":
+                    case "boot":
+                    case "foot":
                     case "feet":
                         stackSlot = EquipSlot.Cloth_Feet;
                         stackEnabled = true;
@@ -209,7 +224,11 @@ namespace CombatHandler.Generic
                         break;
 
                     default:
-
+                    case "hud3":
+                        stackSlot = EquipSlot.Weap_Hud3;
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for slot "+ stackSlot.ToString());
+                        break;
                     case "hud1":
                         stackSlot = EquipSlot.Weap_Hud1;
                         stackEnabled = true;
@@ -220,13 +239,61 @@ namespace CombatHandler.Generic
                         stackEnabled = true;
                         Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
                         break;
-                    case "hud3":
+                    case "u1":
+                    case "util1":
+                    case "utils1":
+                        stackSlot = EquipSlot.Weap_Utils1;
                         stackEnabled = true;
-                        stackSlot = EquipSlot.Weap_Hud3;
-                        Chat.WriteLine("Stack command enabled for Hud3", ChatColor.DarkPink);
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
                         break;
+                    case "u2":
+                    case "util2":
+                    case "utils2":
+                        stackSlot = EquipSlot.Weap_Utils2;
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
+                        break;
+                    case "u3":
+                    case "util3":
+                    case "utils3":
+                        stackSlot = EquipSlot.Weap_Utils3;
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
+                        break;
+                    case "rs":
+                    case "rightshoulder":
+                    case "rightshoulders":
+                        stackSlot = EquipSlot.Cloth_RightShoulder;
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
+                        break;
+                    case "ls":
+                    case "leftshoulder":
+                    case "leftshoulders":
+                        stackSlot = EquipSlot.Cloth_LeftShoulder;
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
+                        break;
+
                     case "neck":
                         stackSlot = EquipSlot.Cloth_Neck;
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
+                        break;
+                    case "head":
+                        stackSlot = EquipSlot.Cloth_Head;
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
+                        break;
+                    case "hand":
+                    case "hands":
+                        stackSlot = EquipSlot.Cloth_Hands;
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
+                        break;
+                    case "leg":
+                    case "legs":
+                        stackSlot = EquipSlot.Cloth_Legs;
                         stackEnabled = true;
                         Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
                         break;
@@ -248,11 +315,6 @@ namespace CombatHandler.Generic
                         stackEnabled = true;
                         Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
                         break;
-                    case "utils3":
-                        stackSlot = EquipSlot.Weap_Utils3;
-                        stackEnabled = true;
-                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
-                        break;
                     case "la":
                     case "leftarm":
                         stackSlot = EquipSlot.Cloth_LeftArm;
@@ -261,7 +323,7 @@ namespace CombatHandler.Generic
                         break;
                     case "ra":
                     case "rightarm":
-                        stackSlot = EquipSlot.Cloth_LeftArm;
+                        stackSlot = EquipSlot.Cloth_RightArm;
                         stackEnabled = true;
                         Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
                         break;
@@ -271,23 +333,6 @@ namespace CombatHandler.Generic
                         stackSlot = EquipSlot.Cloth_RightFinger;
                         stackEnabled = true;
                         Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
-                        break;
-                    case "all":
-
-                        stackSlot = EquipSlot.Weap_Hud3;
-                        stackSlot = EquipSlot.Cloth_RightFinger;
-                        stackSlot = EquipSlot.Cloth_RightWrist;
-                        stackSlot = EquipSlot.Cloth_LeftArm;
-                        stackSlot = EquipSlot.Weap_Utils3;
-                        stackSlot = EquipSlot.Cloth_LeftFinger;
-                        stackSlot = EquipSlot.Cloth_LeftWrist;
-                        stackSlot = EquipSlot.Cloth_Body;
-                        stackSlot = EquipSlot.Cloth_Neck;
-
-                        stackSlot = EquipSlot.Weap_Hud1;
-                        stackSlot = EquipSlot.Cloth_Feet;
-                        stackall = true;
-                        Chat.WriteLine("Stack enabled for all avaliable slots ! ", ChatColor.Green);
                         break;
 
                     case "rw":
@@ -302,12 +347,12 @@ namespace CombatHandler.Generic
                     case "off":
                     case "o":
                         stackEnabled = false;
-                        Chat.WriteLine("Stack/dupe command disabled", ChatColor.Green);
+                        Chat.WriteLine("Stack command disabled");
                         break;
 
                 }
 
-
+                
                 return;
             }
 
@@ -317,7 +362,7 @@ namespace CombatHandler.Generic
         {
             if (fightingTarget != null)
                 return false;
-            if (DynelManager.LocalPlayer.MovementState == MovementState.Sit)
+            if (DynelManager.LocalPlayer.MovementState == MovementState.Sit || DynelManager.LocalPlayer.MovementState == MovementState.Fly)
                 return false;
 
             if (DynelManager.LocalPlayer.Buffs.Find(spell.Nanoline, out Buff buff))
@@ -344,6 +389,9 @@ namespace CombatHandler.Generic
         }
         protected virtual bool StarfallPerk(PerkAction perkAction, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
         {
+            if (DynelManager.LocalPlayer.MovementState == MovementState.Fly)
+                return false;
+
             if (PerkAction.Find(PerkHash.Combust, out PerkAction combust) && !combust.IsAvailable)
                 return false;
 
@@ -351,6 +399,9 @@ namespace CombatHandler.Generic
         }
         private bool RegainNano(PerkAction perkaction, SimpleChar fightingtarget, ref (SimpleChar Target, bool ShouldSetTarget) actiontarget)
         {
+            if (DynelManager.LocalPlayer.MovementState == MovementState.Fly)
+                return false;
+
             if (fightingtarget == null)
                 return false;
 
@@ -362,6 +413,10 @@ namespace CombatHandler.Generic
         }
         private bool TapNotumSource(PerkAction perkaction, SimpleChar fightingtarget, ref (SimpleChar Target, bool ShouldSetTarget) actiontarget)
         {
+            if (DynelManager.LocalPlayer.MovementState == MovementState.Fly)
+                return false;
+
+
             if (fightingtarget == null)
                 return false;
 
@@ -379,7 +434,7 @@ namespace CombatHandler.Generic
         {
             List<Item> characterItems = Inventory.Items;
             Container stackBag = Inventory.Backpacks.FirstOrDefault(x => x.IsOpen);
-            List<int> stackSlots = new List<int>() {
+            List<int> stackSlots = new List<int>() { 
                 (int) stackSlot
                 //(int)EquipSlot.Cloth_Neck,
                 //(int)EquipSlot.Weap_Hud1,
@@ -407,49 +462,7 @@ namespace CombatHandler.Generic
                         StripItem(bank, stackBag);
                         return;
                     }
-                    EquipItem(stackBag);
-                }
-            }
-        }
-        private void StatStackerAll()
-        {
-            List<Item> characterItems = Inventory.Items;
-            Container stackBag = Inventory.Backpacks.FirstOrDefault(x => x.IsOpen);
-            List<int> stackSlots = new List<int>() {
-
-            (int)EquipSlot.Cloth_Neck,
-            (int)EquipSlot.Weap_Hud1,
-            (int)EquipSlot.Weap_Hud3,
-            (int)EquipSlot.Cloth_Body,
-            (int)EquipSlot.Cloth_LeftWrist,
-            (int)EquipSlot.Cloth_LeftFinger ,
-            (int)EquipSlot.Cloth_RightFinger,
-            (int)EquipSlot.Cloth_RightWrist,
-            (int)EquipSlot.Cloth_LeftArm,
-            (int)EquipSlot.Weap_Utils3,
-
-            (int)EquipSlot.Cloth_Feet,
-        };
-
-            if (stackBag != null)
-            {
-                foreach (Item item in characterItems)
-                {
-                    //Look for an item equiped to either of the slots we want to stack
-                    if (stackSlots.Contains(item.Slot.Instance))
-                    {
-                        //Chat.WriteLine($"{item.Name}::{item.HighId}");
-                        Identity stackBagId = stackBag.Identity;
-                        Identity bank = new Identity();
-                        bank.Type = IdentityType.BankByRef;
-                        int index = stackSlots.IndexOf(item.Slot.Instance);
-                        bank.Instance = stackSlots.ElementAt(index);
-                        if (stackLog == true)
-                            Chat.WriteLine($"Bank slot: {bank.Instance} :: Item: {item.Name} :: Bag slot: {stackBag.Slot}");
-                        StripItem(bank, stackBag);
-                        return;
-                    }
-                    EquipItemAll(stackBag);
+                     EquipItem(stackBag);
                 }
             }
         }
@@ -470,47 +483,24 @@ namespace CombatHandler.Generic
                 if (Enum.IsDefined(typeof(StackItems), item.HighId))
                 {
                     item.Equip((EquipSlot)stackSlot);
-                    //item.Equip(EquipSlot.Cloth_LeftFinger);
-                    //item.Equip(EquipSlot.Weap_Hud1);
-                    //item.Equip(EquipSlot.Weap_Hud3);
-                    //item.Equip(EquipSlot.Cloth_LeftWrist);
-                    //item.Equip(EquipSlot.Cloth_Body);
-                    //item.Equip(EquipSlot.Cloth_Neck);
-                    break;
-                }
-            }
-        }
-        private void EquipItemAll(Container stackBag)
-        {
-            foreach (Item item in stackBag.Items)
-            {
-                if (Enum.IsDefined(typeof(StackItems), item.HighId))
-                {
 
-                    //  item.Equip(EquipSlot.Cloth_LeftFinger);
-                    item.Equip(EquipSlot.Weap_Hud1);
-                    item.Equip(EquipSlot.Weap_Hud3);
-                    //   item.Equip(EquipSlot.Cloth_LeftWrist);
-                    //  item.Equip(EquipSlot.Cloth_RightWrist);
-                    //item.Equip(EquipSlot.Cloth_Body);
-                    item.Equip(EquipSlot.Cloth_Neck);
-                    // item.Equip(EquipSlot.Cloth_Feet);
-                    item.Equip(EquipSlot.Weap_Utils3);
-                    // item.Equip(EquipSlot.Cloth_LeftFinger);
-                    // item.Equip(EquipSlot.Cloth_RightFinger);
-                    //item.Equip(EquipSlot.Cloth_LeftArm);
-
-                    break;
+                //item.Equip(EquipSlot.Cloth_LeftFinger);
+                //item.Equip(EquipSlot.Weap_Hud1);
+                //item.Equip(EquipSlot.Weap_Hud3);
+                //item.Equip(EquipSlot.Cloth_LeftWrist);
+                //item.Equip(EquipSlot.Cloth_Body);
+                //item.Equip(EquipSlot.Cloth_Neck);
+                  break;
                 }
             }
         }
         private void OnUpdate(object sender, float e)
         {
 
-            if (DynelManager.LocalPlayer.GetStat(Stat.NumFightingOpponents) > 0)
-            {
+             if (DynelManager.LocalPlayer.GetStat(Stat.NumFightingOpponents) > 0)
+             {
                 _lastCombatTime = Time.NormalTime;
-            }
+             }
 
 
             try
@@ -518,10 +508,6 @@ namespace CombatHandler.Generic
                 if (stackEnabled == true)
                 {
                     StatStacker();
-                }
-                if (stackall == true)
-                {
-                    StatStackerAll();
                 }
 
             }
@@ -535,6 +521,9 @@ namespace CombatHandler.Generic
 
         protected bool LEProc(PerkAction perkAction, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
         {
+            if (DynelManager.LocalPlayer.MovementState == MovementState.Fly)
+                return false;
+
             foreach (Buff buff in DynelManager.LocalPlayer.Buffs.AsEnumerable())
             {
                 if (buff.Name == perkAction.Name)
@@ -545,113 +534,141 @@ namespace CombatHandler.Generic
             return true;
         }
 
-        public bool HasBuff(Spell spell, SimpleChar target)
+    public bool HasBuff(Spell spell, SimpleChar target)
+    {
+        foreach (Buff buff in target.Buffs.AsEnumerable())
         {
-            foreach (Buff buff in target.Buffs.AsEnumerable())
+            if (spell.Nanoline == buff.Nanoline && spell.StackingOrder <= buff.StackingOrder)
             {
-                if (spell.Nanoline == buff.Nanoline && spell.StackingOrder <= buff.StackingOrder)
-                {
-                    return true;
-                }
+                return true;
             }
-            return false;
         }
+        return false;
+    }
 
-        public bool TeamBuff(Spell spell, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
+    public bool TeamBuff(Spell spell, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
+    {
+        if (DynelManager.LocalPlayer.MovementState == MovementState.Sit)
+            return false;
+
+        if (DynelManager.LocalPlayer.IsInTeam())
         {
-            if (DynelManager.LocalPlayer.MovementState == MovementState.Sit)
-                return false;
-
-            if (DynelManager.LocalPlayer.IsInTeam())
+            SimpleChar teamMemberWithoutBuff = DynelManager.Characters
+                .Where(c => Team.Members.Select(t => t.Identity.Instance).Contains(c.Identity.Instance))
+                .Where(c => !HasBuff(spell, c))
+                .FirstOrDefault();
+            if (teamMemberWithoutBuff != null)
             {
-                SimpleChar teamMemberWithoutBuff = DynelManager.Characters
-                    .Where(c => Team.Members.Select(t => t.Identity.Instance).Contains(c.Identity.Instance))
-                    .Where(c => !HasBuff(spell, c))
-                    .FirstOrDefault();
-                if (teamMemberWithoutBuff != null)
-                {
-                    int currentNCU = teamMemberWithoutBuff.GetStat(Stat.CurrentNCU);
-                    int maxNCU = teamMemberWithoutBuff.GetStat(Stat.MaxNCU);
+                int currentNCU = teamMemberWithoutBuff.GetStat(Stat.CurrentNCU);
+                int maxNCU = teamMemberWithoutBuff.GetStat(Stat.MaxNCU);
 
-                    // MaxNCU is bugged, for a 12 NCU it gives -459 NCU, we need to adapt to calc exact NCU
+                // MaxNCU is bugged, for a 12 NCU it gives -459 NCU, we need to adapt to calc exact NCU
 
-                    int missingNCU = 459 + 255;
+                int missingNCU = 459+255;
 
-                    int baseNCU = 12;
+                int baseNCU = 12;
 
-                    maxNCU += missingNCU + baseNCU;
-                    int remainingNCU = maxNCU - currentNCU;
+                maxNCU += missingNCU + baseNCU;
+                int remainingNCU = maxNCU - currentNCU;
 
-                    Chat.WriteLine(teamMemberWithoutBuff.Name + " is missing " + spell.Name);
-                    //if (remainingNCU > Math.Abs(spell.NCU))
-                    //{
+                Chat.WriteLine(teamMemberWithoutBuff.Name + " is missing " + spell.Name);
+                //if (remainingNCU > Math.Abs(spell.NCU))
+                //{
                     actionTarget.Target = teamMemberWithoutBuff;
                     return true;
-                    //}
-                }
+                //}
             }
+        }
 
+        return false;
+    }
+
+    private bool FlowerOfLife(Item item, SimpleChar fightingtarget, ref (SimpleChar Target, bool ShouldSetTarget) actiontarget)
+    {
+        if (fightingtarget == null)
             return false;
-        }
 
-        private bool FlowerOfLife(Item item, SimpleChar fightingtarget, ref (SimpleChar Target, bool ShouldSetTarget) actiontarget)
+        if (DynelManager.LocalPlayer.Cooldowns.ContainsKey(GetSkillLockStat(item)))
+            return false;
+
+        int approximateHealing = item.QualityLevel * 10;
+
+        return DynelManager.LocalPlayer.MissingHealth > approximateHealing;
+    }
+
+    private bool HealthAndNanoStim(Item item, SimpleChar fightingtarget, ref (SimpleChar Target, bool ShouldSetTarget) actiontarget)
+    {
+        if (fightingtarget == null)
+            return false;
+
+        if (DynelManager.LocalPlayer.Cooldowns.ContainsKey(GetSkillLockStat(item)))
+            return false;
+
+        actiontarget.ShouldSetTarget = true;
+        actiontarget.Target = DynelManager.LocalPlayer;
+
+        int approximateHealing = item.QualityLevel * 10;
+
+        return DynelManager.LocalPlayer.MissingHealth > approximateHealing || DynelManager.LocalPlayer.MissingNano > approximateHealing;
+    }
+    private bool ExperienceStim(Item item, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
+    {
+        if (DynelManager.LocalPlayer.Cooldowns.ContainsKey(Stat.FirstAid))
+            return false;
+
+        actionTarget.Target = DynelManager.LocalPlayer;
+        actionTarget.ShouldSetTarget = false;
+        return true;
+
+    }
+    private bool SitKit(Item item, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
+    {
+        if (DynelManager.LocalPlayer.Cooldowns.ContainsKey(Stat.Treatment))
+            return false;
+
+        if (DynelManager.LocalPlayer.HealthPercent > 65 && DynelManager.LocalPlayer.NanoPercent > 65)
+            return false;
+
+        actionTarget.Target = DynelManager.LocalPlayer;
+        actionTarget.ShouldSetTarget = true;
+        return true;
+
+    }
+
+
+
+    private bool FountainOfLife(Spell spell, SimpleChar fightingtarget, ref (SimpleChar Target, bool ShouldSetTarget) actiontarget)
+    {
+        // Prioritize keeping ourself alive
+        if (DynelManager.LocalPlayer.HealthPercent <= 30)
         {
-            if (fightingtarget == null)
-                return false;
-
-            if (DynelManager.LocalPlayer.Cooldowns.ContainsKey(GetSkillLockStat(item)))
-                return false;
-
-            int approximateHealing = item.QualityLevel * 10;
-
-            return DynelManager.LocalPlayer.MissingHealth > approximateHealing;
-        }
-
-        private bool HealthAndNanoStim(Item item, SimpleChar fightingtarget, ref (SimpleChar Target, bool ShouldSetTarget) actiontarget)
-        {
-            if (fightingtarget == null)
-                return false;
-
-            if (DynelManager.LocalPlayer.Cooldowns.ContainsKey(GetSkillLockStat(item)))
-                return false;
-
-            actiontarget.ShouldSetTarget = true;
             actiontarget.Target = DynelManager.LocalPlayer;
-
-            int approximateHealing = item.QualityLevel * 10;
-
-            return DynelManager.LocalPlayer.MissingHealth > approximateHealing || DynelManager.LocalPlayer.MissingNano > approximateHealing;
-        }
-        private bool ExperienceStim(Item item, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
-        {
-            if (DynelManager.LocalPlayer.Cooldowns.ContainsKey(Stat.FirstAid))
-                return false;
-
-            actionTarget.Target = DynelManager.LocalPlayer;
-            actionTarget.ShouldSetTarget = false;
             return true;
-
         }
-        private bool SitKit(Item item, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
+
+        // Try to keep our teammates alive if we're in a team
+        if (DynelManager.LocalPlayer.IsInTeam())
         {
-            if (DynelManager.LocalPlayer.Cooldowns.ContainsKey(Stat.Treatment))
-                return false;
+            SimpleChar dyingTeamMember = DynelManager.Characters
+                .Where(c => c.IsAlive)
+                .Where(c => Team.Members.Select(t => t.Identity.Instance).Contains(c.Identity.Instance))
+                .Where(c => c.HealthPercent < 30)
+                .OrderByDescending(c => c.GetStat(Stat.NumFightingOpponents))
+                .FirstOrDefault();
 
-            if (DynelManager.LocalPlayer.HealthPercent > 65 && DynelManager.LocalPlayer.NanoPercent > 65)
-                return false;
-
-            actionTarget.Target = DynelManager.LocalPlayer;
-            actionTarget.ShouldSetTarget = true;
-            return true;
-
+            if (dyingTeamMember != null)
+            {
+                actiontarget.Target = dyingTeamMember;
+                return true;
+            }
         }
 
-
-
-        private bool FountainOfLife(Spell spell, SimpleChar fightingtarget, ref (SimpleChar Target, bool ShouldSetTarget) actiontarget)
+        return false;
+        }
+        private bool Invocation(Spell spell, SimpleChar fightingtarget, ref (SimpleChar Target, bool ShouldSetTarget) actiontarget)
         {
             // Prioritize keeping ourself alive
-            if (DynelManager.LocalPlayer.HealthPercent <= 30)
+            if (DynelManager.LocalPlayer.HealthPercent <= 40)
             {
                 actiontarget.Target = DynelManager.LocalPlayer;
                 return true;
@@ -663,7 +680,35 @@ namespace CombatHandler.Generic
                 SimpleChar dyingTeamMember = DynelManager.Characters
                     .Where(c => c.IsAlive)
                     .Where(c => Team.Members.Select(t => t.Identity.Instance).Contains(c.Identity.Instance))
-                    .Where(c => c.HealthPercent < 30)
+                    .Where(c => c.HealthPercent < 40)
+                    .OrderByDescending(c => c.GetStat(Stat.NumFightingOpponents))
+                    .FirstOrDefault();
+
+                if (dyingTeamMember != null)
+                {
+                    actiontarget.Target = dyingTeamMember;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        private bool SelfHeal(Spell spell, SimpleChar fightingtarget, ref (SimpleChar Target, bool ShouldSetTarget) actiontarget)
+        {
+            // Prioritize keeping ourself alive
+            if (DynelManager.LocalPlayer.HealthPercent <= 85)
+            {
+                actiontarget.Target = DynelManager.LocalPlayer;
+                return true;
+            }
+
+            // Try to keep our teammates alive if we're in a team
+            if (DynelManager.LocalPlayer.IsInTeam())
+            {
+                SimpleChar dyingTeamMember = DynelManager.Characters
+                    .Where(c => c.IsAlive)
+                    .Where(c => Team.Members.Select(t => t.Identity.Instance).Contains(c.Identity.Instance))
+                    .Where(c => c.HealthPercent <85)
                     .OrderByDescending(c => c.GetStat(Stat.NumFightingOpponents))
                     .FirstOrDefault();
 
@@ -677,206 +722,208 @@ namespace CombatHandler.Generic
             return false;
         }
         private bool SelfDefPerk(PerkAction perkaction, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
-        {
-            if (DynelManager.LocalPlayer.HealthPercent <= 50)
+    {
+        if (DynelManager.LocalPlayer.HealthPercent <= 50)
 
-                return true;
+            return true;
 
+        return false;
+    }
+
+    private bool EnduranceBooster(Item item, SimpleChar fightingtarget, ref (SimpleChar Target, bool ShouldSetTarget) actiontarget)
+    {
+        // don't use if skill is locked (we will add this dynamically later)
+        if (DynelManager.LocalPlayer.Cooldowns.ContainsKey(Stat.Strength))
             return false;
-        }
 
-        private bool EnduranceBooster(Item item, SimpleChar fightingtarget, ref (SimpleChar Target, bool ShouldSetTarget) actiontarget)
-        {
-            // don't use if skill is locked (we will add this dynamically later)
-            if (DynelManager.LocalPlayer.Cooldowns.ContainsKey(Stat.Strength))
-                return false;
+        // don't use if we're above 40%
+        if (DynelManager.LocalPlayer.HealthPercent > 40)
+            return false;
 
-            // don't use if we're above 40%
-            if (DynelManager.LocalPlayer.HealthPercent > 40)
-                return false;
+        // don't use if nothing is fighting us
+        if (DynelManager.LocalPlayer.GetStat(Stat.NumFightingOpponents) == 0)
+            return false;
 
-            // don't use if nothing is fighting us
-            if (DynelManager.LocalPlayer.GetStat(Stat.NumFightingOpponents) == 0)
-                return false;
-
-            // don't use if we have another major absorb running
-            // we could check remaining absorb stat to be slightly more effective
-            if (DynelManager.LocalPlayer.Buffs.Contains(NanoLine.BioCocoon))
-                return false;
+        // don't use if we have another major absorb running
+        // we could check remaining absorb stat to be slightly more effective
+        if (DynelManager.LocalPlayer.Buffs.Contains(NanoLine.BioCocoon))
+            return false;
             if (DynelManager.LocalPlayer.IsAttacking)
                 DynelManager.LocalPlayer.Pets.Attack(fightingtarget.Identity);
 
             return true;
-        }
+    }
 
-        protected virtual bool TargetedDamagePerk(PerkAction perkaction, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
-        {
-            actionTarget.ShouldSetTarget = true;
-            return DamagePerk(perkaction, fightingTarget, ref actionTarget);
-        }
+    protected virtual bool TargetedDamagePerk(PerkAction perkaction, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
+    {
+        actionTarget.ShouldSetTarget = true;
+        return DamagePerk(perkaction, fightingTarget, ref actionTarget);
+    }
 
-        protected virtual bool DamagePerk(PerkAction perkaction, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
-        {
-            if (fightingTarget == null)
-                return false;
-
-            if (fightingTarget.Health > 50000)
-                return true;
-
-            if (fightingTarget.HealthPercent < 5)
-                return false;
-
-            return true;
-        }
-        protected virtual bool Sacrifice(PerkAction perkAction, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
-        {
-            if (fightingTarget == null)
-                return false;
-
-            if (fightingTarget.Health > 1000000 && fightingTarget.HealthPercent <= 30)
-                return true;
-
-            if (fightingTarget.HealthPercent < 5)
-                return false;
-
+    protected virtual bool DamagePerk(PerkAction perkaction, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
+    {
+        if (fightingTarget == null)
             return false;
-        }
 
-        protected virtual bool TargetedDamageItem(Item item, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
-        {
-            actionTarget.ShouldSetTarget = true;
+        if (fightingTarget.Health > 50000)
+            return true;
+
+        if (fightingTarget.HealthPercent < 5)
+            return false;
+
+        return true;
+    }
+    protected virtual bool Sacrifice(PerkAction perkAction, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
+    {
+        if (fightingTarget == null)
+            return false;
+
+        if (fightingTarget.Health > 1000000 && fightingTarget.HealthPercent <= 30)
+            return true;
+
+        if (fightingTarget.HealthPercent < 5)
+            return false;
+
+        return false;
+    }
+
+    protected virtual bool TargetedDamageItem(Item item, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
+    {
+        actionTarget.ShouldSetTarget = true;
+        return DamageItem(item, fightingTarget, ref actionTarget);
+    }
+
+    protected virtual bool DamageItem(Item item, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
+    {
+        if (fightingTarget == null)
+            return false;
+
+        if (DynelManager.LocalPlayer.Cooldowns.ContainsKey(GetSkillLockStat(item)))
+            return false;
+
+        return true;
+    }
+
+    protected virtual bool Coffee(Item item, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
+    {
+        if (!DynelManager.LocalPlayer.Buffs.Contains(NanoLine.FoodandDrinkBuffs))
             return DamageItem(item, fightingTarget, ref actionTarget);
-        }
 
-        protected virtual bool DamageItem(Item item, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
-        {
-            if (fightingTarget == null)
-                return false;
+        return false;
+    }
 
-            if (DynelManager.LocalPlayer.Cooldowns.ContainsKey(GetSkillLockStat(item)))
-                return false;
-
-            return true;
-        }
-
-        protected virtual bool Coffee(Item item, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
-        {
-            if (!DynelManager.LocalPlayer.Buffs.Contains(NanoLine.FoodandDrinkBuffs))
-                return DamageItem(item, fightingTarget, ref actionTarget);
-
+    private bool Limber(PerkAction perkaction, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
+    {
+        if (fightingTarget == null)
             return false;
-        }
+        if (DynelManager.LocalPlayer.Buffs.Find(RelevantNanos.DanceOfFools, out Buff dof) && dof.RemainingTime > 12.5f)
+            return false;
 
-        private bool Limber(PerkAction perkaction, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
+        // stop cycling if we haven't fought anything for over 10 minutes
+        if (Time.NormalTime - _lastCombatTime > EvadeCycleTimeoutSeconds)
+            return false;
+
+        return true;
+    }
+
+    private bool DanceOfFools(PerkAction perkaction, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
+    {
+        if (fightingTarget == null)
+            return false;
+        if (!DynelManager.LocalPlayer.Buffs.Find(RelevantNanos.Limber, out Buff limber) || limber.RemainingTime > 12.5f)
+            return false;
+
+        // stop cycling if we haven't fought anything for over 10 minutes
+        if (Time.NormalTime - _lastCombatTime > EvadeCycleTimeoutSeconds)
+            return false;
+
+        return true;
+    }
+
+    // This will eventually be done dynamically but for now I will implement
+    // it statically so we can have it functional
+    private Stat GetSkillLockStat(Item item)
+    {
+        switch (item.HighId)
         {
-            if (fightingTarget == null)
-                return false;
-            if (DynelManager.LocalPlayer.Buffs.Find(RelevantNanos.DanceOfFools, out Buff dof) && dof.RemainingTime > 12.5f)
-                return false;
-
-            // stop cycling if we haven't fought anything for over 10 minutes
-            if (Time.NormalTime - _lastCombatTime > EvadeCycleTimeoutSeconds)
-                return false;
-
-            return true;
-        }
-
-        private bool DanceOfFools(PerkAction perkaction, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
-        {
-            if (fightingTarget == null)
-                return false;
-            if (!DynelManager.LocalPlayer.Buffs.Find(RelevantNanos.Limber, out Buff limber) || limber.RemainingTime > 12.5f)
-                return false;
-
-            // stop cycling if we haven't fought anything for over 10 minutes
-            if (Time.NormalTime - _lastCombatTime > EvadeCycleTimeoutSeconds)
-                return false;
-
-            return true;
-        }
-
-        // This will eventually be done dynamically but for now I will implement
-        // it statically so we can have it functional
-        private Stat GetSkillLockStat(Item item)
-        {
-            switch (item.HighId)
-            {
-                case RelevantItems.UponAWaveOfSummerLow:
-                case RelevantItems.UponAWaveOfSummerHigh:
-                    return Stat.Riposte;
-                case RelevantItems.FlowerOfLifeLow:
-                case RelevantItems.FlowerOfLifeHigh:
-                    return Stat.MartialArts;
-                case RelevantItems.HealthAndNanoStimLow:
-                case RelevantItems.HealthAndNanoStimHigh:
-                    return Stat.FirstAid;
-                case RelevantItems.FlurryOfBlowsLow:
-                case RelevantItems.FlurryOfBlowsHigh:
-                    return Stat.AggDef;
-                case RelevantItems.StrengthOfTheImmortal:
-                case RelevantItems.MightOfTheRevenant:
-                case RelevantItems.BarrowStrength:
-                    return Stat.Strength;
-                case RelevantItems.MeteoriteSpikes:
-                case RelevantItems.LavaCapsule:
-                case RelevantItems.KizzermoleGumboil:
-                    return Stat.SharpObject;
-                case RelevantItems.SteamingHotCupOfEnhancedCoffee:
-                    return Stat.RunSpeed;
-                case RelevantItems.GnuffsEternalRiftCrystal:
-                    return Stat.MapNavigation;
-                case RelevantItems.Xpcan:
-                    return Stat.XP;
-                default:
-                    throw new Exception($"No skill lock stat defined for item id {item.HighId}");
-            }
-        }
-
-        private static class RelevantItems
-        {
-            public const int FlurryOfBlowsLow = 85907;
-            public const int FlurryOfBlowsHigh = 85908;
-            public const int StrengthOfTheImmortal = -1;
-            public const int MightOfTheRevenant = 206013;
-            public const int BarrowStrength = 204653;
-            public const int LavaCapsule = 245990;
-            public const int KizzermoleGumboil = 245323;
-            public const int SteamingHotCupOfEnhancedCoffee = 157296;
-            public const int DreadlochEnduranceBooster = 267168;
-            public const int DreadlochEnduranceBoosterNanomageEdition = 267167;
-            public const int MeteoriteSpikes = 244204;
-            public const int FlowerOfLifeLow = 70614;
-            public const int FlowerOfLifeHigh = 204326;
-            public const int UponAWaveOfSummerLow = 205405;
-            public const int UponAWaveOfSummerHigh = 205406;
-            public const int GnuffsEternalRiftCrystal = 303179;
-            public const int HealthAndNanoStimLow = 291043;
-            public const int HealthAndNanoStimHigh = 291044;
-            public const int Xpcan = 288771;
-            public const int Xpcan1 = 288772;
-            public const int ExperienceStim = 288769;
-            public const int PremSitKit = 297274;
-            public const int SitKit1 = 291082;
-            public const int SitKit100 = 291083;
-            public const int SitKit200 = 291084;
-            public const int SitKit300 = 293296;
-
-
-        }
-
-
-        private static class RelevantNanos
-        {
-            public const int FountainOfLife = 302907;
-            public const int DanceOfFools = 210159;
-            public const int Limber = 210158;
-            public const int CompositeRangedExpertise = 223348;
-            public static readonly int CompositeAttributes = 223372;
-            public static readonly int CompositeNano = 223380;
-            public static readonly int CompositeRanged = 223364;
-            public static readonly int CompositeRangedSpecial = 223348;
+            case RelevantItems.UponAWaveOfSummerLow:
+            case RelevantItems.UponAWaveOfSummerHigh:
+                return Stat.Riposte;
+            case RelevantItems.FlowerOfLifeLow:
+            case RelevantItems.FlowerOfLifeHigh:
+                return Stat.MartialArts;
+            case RelevantItems.HealthAndNanoStimLow:
+            case RelevantItems.HealthAndNanoStimHigh:
+                return Stat.FirstAid;
+            case RelevantItems.FlurryOfBlowsLow:
+            case RelevantItems.FlurryOfBlowsHigh:
+                return Stat.AggDef;
+            case RelevantItems.StrengthOfTheImmortal:
+            case RelevantItems.MightOfTheRevenant:
+            case RelevantItems.BarrowStrength:
+                return Stat.Strength;
+            case RelevantItems.MeteoriteSpikes:
+            case RelevantItems.LavaCapsule:
+            case RelevantItems.KizzermoleGumboil:
+                return Stat.SharpObject;
+            case RelevantItems.SteamingHotCupOfEnhancedCoffee:
+                return Stat.RunSpeed;
+            case RelevantItems.GnuffsEternalRiftCrystal:
+                return Stat.MapNavigation;
+            case RelevantItems.Xpcan:
+                return Stat.XP;
+            default:
+                throw new Exception($"No skill lock stat defined for item id {item.HighId}");
         }
     }
+
+    private static class RelevantItems
+    {
+        public const int FlurryOfBlowsLow = 85907;
+        public const int FlurryOfBlowsHigh = 85908;
+        public const int StrengthOfTheImmortal = -1;
+        public const int MightOfTheRevenant = 206013;
+        public const int BarrowStrength = 204653;
+        public const int LavaCapsule = 245990;
+        public const int KizzermoleGumboil = 245323;
+        public const int SteamingHotCupOfEnhancedCoffee = 157296;
+        public const int DreadlochEnduranceBooster = 267168;
+        public const int DreadlochEnduranceBoosterNanomageEdition = 267167;
+        public const int MeteoriteSpikes = 244204;
+        public const int FlowerOfLifeLow = 70614;
+        public const int FlowerOfLifeHigh = 204326;
+        public const int UponAWaveOfSummerLow = 205405;
+        public const int UponAWaveOfSummerHigh = 205406;
+        public const int GnuffsEternalRiftCrystal = 303179;
+        public const int HealthAndNanoStimLow = 291043;
+        public const int HealthAndNanoStimHigh = 291044;
+        public const int Xpcan = 288771;
+        public const int Xpcan1 = 288772;
+        public const int ExperienceStim = 288769;
+        public const int PremSitKit = 297274;
+        public const int SitKit1 = 291082;
+        public const int SitKit100 = 291083;
+        public const int SitKit200 = 291084;
+        public const int SitKit300 = 293296;
+
+
+    }
+
+
+    private static class RelevantNanos
+    {
+        public const int FountainOfLife = 302907;
+        public const int InvocationofthePhoenix  = 302907;
+        public const int DanceOfFools = 210159;
+        public const int Limber = 210158;
+        public const int CompositeRangedExpertise = 223348;
+        public static readonly int CompositeAttributes = 223372;
+        public static readonly int CompositeNano = 223380;
+        public static readonly int CompositeRanged = 223364;
+        public static readonly int CompositeRangedSpecial = 223348;
+
+    }
+}
 }
 public enum StackItems
 {
@@ -924,11 +971,14 @@ public enum StackItems
     ClanAdvancementLateNight = 296367,
     ClanAdvancementBlossomsofSummer = 296366,
     ClanAdvancementLeavesofSpring = 296365,
+    ClanAdvancementLeavesofSpring2 = 96352,
     ClanAdvancementTwigofHope = 296364,
     ClanAdvancementDoubleSun = 296370,
     ClanMeritsXanDefenseParagon = 279437,
     ClanMeritsAwakenedCombatParagon = 302912,
     ClanMeritsAwakenedDefenseParagon = 302914,
+    ClanMeritsDoubleSun = 96357,
+
     DocaholicRing = 288744,
     DocaholicRing2 = 288745,
 
@@ -940,6 +990,9 @@ public enum StackItems
     RingofDivineTeardrops2 = 238915,
     RingOfEssence = 269190,
     RingOfEssence2 = 269191,
+    RingofEndurance = 269188,
+    RingofEndurance2 = 269189,
+
     NTProfRing = 267574,
     XtremTechRingofCasting = 267559,
     XtremTechRingofCasting2 = 268305,
@@ -949,9 +1002,10 @@ public enum StackItems
     PureNovictumRingfortheSupportUnit = 226288,
     PureNovictumRingfortheExterminationUnit = 226291,
     PureNovictumRingfortheInfantryUnit = 226307,
-    PureNovictumRingfortheControlUnit = 226290,
+    PureNovictumRingfortheControlUnit = 226290,    
     PureNovictumRingfortheArtilleryUnit = 226308,
-
+    RingofPresence = 160425,
+    RingofPresence2 = 160426,
 
 
 
@@ -959,7 +1013,10 @@ public enum StackItems
     NanoTargetingHelper = 269184,
     MasterpieceAncientBracer = 267780,
     DustBrigadeBracerThirdEdition = 292564,
-
+    HackedTechnicalLibrary = 295756,
+    ExperimentalCyborgTokenBoard = 244719,
+    DesertNomadSleeves = 290227,
+    DesertNomadSleeves2 = 290226,
 
     // nova dillon
     NovaDillonBoots = 163941,
@@ -967,6 +1024,16 @@ public enum StackItems
     NovaDillonArmorSleeves = 163943,
     NovaDillonArmorSleeves2 = 163944,
     NovaDillonArmorChest = 163945,
-    NovaDillonArmorChest2 = 163946
+    NovaDillonArmorChest2 = 163946,
+    NovaDillonArmorPants = 163951,
+    NovaDillonArmorPants2 = 163952,
+    NovaDillonArmorHelmet = 163949,
+    NovaDillonArmorHelment2 = 163950,
+
+    // lowby stuff
+    DustBrigadeParasitePauldron = 303046,
+    DustBrigadeParasitePauldron2 = 303047,
+    DustBrigadeParasiteHelmet = 293398
+
 
 }
