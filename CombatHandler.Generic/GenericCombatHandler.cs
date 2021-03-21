@@ -1017,6 +1017,7 @@ public enum StackItems
     ExperimentalCyborgTokenBoard = 244719,
     DesertNomadSleeves = 290227,
     DesertNomadSleeves2 = 290226,
+    CollarofAmplification  = 259265,
 
     // nova dillon
     NovaDillonBoots = 163941,
