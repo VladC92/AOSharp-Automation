@@ -341,6 +341,12 @@ namespace CombatHandler.Generic
                         stackEnabled = true;
                         Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
                         break;
+                    case "rh":
+                    case "righthand":
+                        stackSlot = EquipSlot.Weap_RightHand;
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
+                        break;
 
                     case "s":
                     case "stop":
