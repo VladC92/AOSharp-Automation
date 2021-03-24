@@ -273,21 +273,10 @@ namespace CombatHandler.Generic
                         Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
                         break;
                     case "all":
-
-                        stackSlot = EquipSlot.Weap_Hud3;
-                        stackSlot = EquipSlot.Cloth_RightFinger;
-                        stackSlot = EquipSlot.Cloth_RightWrist;
-                        stackSlot = EquipSlot.Cloth_LeftArm;
-                        stackSlot = EquipSlot.Weap_Utils3;
-                        stackSlot = EquipSlot.Cloth_LeftFinger;
-                        stackSlot = EquipSlot.Cloth_LeftWrist;
-                        stackSlot = EquipSlot.Cloth_Body;
+                        stackSlot = EquipSlot.Weap_Hud3;            
                         stackSlot = EquipSlot.Cloth_Neck;
-
-                        stackSlot = EquipSlot.Weap_Hud1;
-                        stackSlot = EquipSlot.Cloth_Feet;
                         stackall = true;
-                        Chat.WriteLine("Stack enabled for all avaliable slots ! ", ChatColor.Green);
+                        Chat.WriteLine("Stack enabled for hud3  and neck slots ! ", ChatColor.Green);
                         break;
 
                     case "rw":
@@ -418,17 +407,7 @@ namespace CombatHandler.Generic
             List<int> stackSlots = new List<int>() {
 
             (int)EquipSlot.Cloth_Neck,
-            (int)EquipSlot.Weap_Hud1,
             (int)EquipSlot.Weap_Hud3,
-            (int)EquipSlot.Cloth_Body,
-            (int)EquipSlot.Cloth_LeftWrist,
-            (int)EquipSlot.Cloth_LeftFinger ,
-            (int)EquipSlot.Cloth_RightFinger,
-            (int)EquipSlot.Cloth_RightWrist,
-            (int)EquipSlot.Cloth_LeftArm,
-            (int)EquipSlot.Weap_Utils3,
-
-            (int)EquipSlot.Cloth_Feet,
         };
 
             if (stackBag != null)
