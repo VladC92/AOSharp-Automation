@@ -465,20 +465,8 @@ namespace CombatHandler.Generic
             {
                 if (Enum.IsDefined(typeof(StackItems), item.HighId))
                 {
-
-                    //  item.Equip(EquipSlot.Cloth_LeftFinger);
-                    item.Equip(EquipSlot.Weap_Hud1);
                     item.Equip(EquipSlot.Weap_Hud3);
-                    //   item.Equip(EquipSlot.Cloth_LeftWrist);
-                    //  item.Equip(EquipSlot.Cloth_RightWrist);
-                    //item.Equip(EquipSlot.Cloth_Body);
                     item.Equip(EquipSlot.Cloth_Neck);
-                    // item.Equip(EquipSlot.Cloth_Feet);
-                    item.Equip(EquipSlot.Weap_Utils3);
-                    // item.Equip(EquipSlot.Cloth_LeftFinger);
-                    // item.Equip(EquipSlot.Cloth_RightFinger);
-                    //item.Equip(EquipSlot.Cloth_LeftArm);
-
                     break;
                 }
             }
