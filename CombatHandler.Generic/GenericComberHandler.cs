@@ -930,6 +930,7 @@ public enum StackItems
 
     // Other
     NanoTargetingHelper = 269184,
+    NanoTargetingHelper2 = 269185,
     MasterpieceAncientBracer = 267780,
     DustBrigadeBracerThirdEdition = 292564,
     GauntRightShoulder = 291931,
