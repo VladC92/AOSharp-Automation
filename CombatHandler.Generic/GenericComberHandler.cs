@@ -205,7 +205,7 @@ namespace CombatHandler.Generic
                     case "feet":
                         stackSlot = EquipSlot.Cloth_Feet;
                         stackEnabled = true;
-                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
                         break;
 
                     default:
@@ -213,67 +213,67 @@ namespace CombatHandler.Generic
                     case "hud1":
                         stackSlot = EquipSlot.Weap_Hud1;
                         stackEnabled = true;
-                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
                         break;
                     case "hud2":
                         stackSlot = EquipSlot.Weap_Hud2;
                         stackEnabled = true;
-                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
                         break;
                     case "hud3":
                         stackEnabled = true;
                         stackSlot = EquipSlot.Weap_Hud3;
-                        Chat.WriteLine("Stack command enabled for Hud3", ChatColor.DarkPink);
+                        Chat.WriteLine("Stack command enabled for Hud3", ChatColor.Green);
                         break;
                     case "neck":
                         stackSlot = EquipSlot.Cloth_Neck;
                         stackEnabled = true;
-                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
                         break;
                     case "chest":
                     case "body":
                         stackSlot = EquipSlot.Cloth_Body;
                         stackEnabled = true;
-                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
                         break;
                     case "lw":
                     case "leftwrist":
                         stackSlot = EquipSlot.Cloth_LeftWrist;
                         stackEnabled = true;
-                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
                         break;
                     case "lf":
                     case "leftfinger":
                         stackSlot = EquipSlot.Cloth_LeftFinger;
                         stackEnabled = true;
-                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
                         break;
                     case "utils3":
                         stackSlot = EquipSlot.Weap_Utils3;
                         stackEnabled = true;
-                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
                         break;
                     case "la":
                     case "leftarm":
                         stackSlot = EquipSlot.Cloth_LeftArm;
                         stackEnabled = true;
-                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
                         break;
                     case "ra":
                     case "rightarm":
                         stackSlot = EquipSlot.Cloth_LeftArm;
                         stackEnabled = true;
-                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
                         break;
 
                     case "rf":
                     case "rightfinger":
                         stackSlot = EquipSlot.Cloth_RightFinger;
                         stackEnabled = true;
-                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
                         break;
                     case "all":
-                        stackSlot = EquipSlot.Weap_Hud3;            
+                        stackSlot = EquipSlot.Weap_Hud3;
                         stackSlot = EquipSlot.Cloth_Neck;
                         stackall = true;
                         Chat.WriteLine("Stack enabled for hud3  and neck slots ! ", ChatColor.Green);
@@ -283,7 +283,13 @@ namespace CombatHandler.Generic
                     case "rightwrist":
                         stackSlot = EquipSlot.Cloth_RightWrist;
                         stackEnabled = true;
-                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString());
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
+                        break;
+                    case "rs":
+                    case "rightshoulder":
+                        stackSlot = EquipSlot.Cloth_RightShoulder;
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString() , ChatColor.Green);
                         break;
 
                     case "s":
@@ -926,6 +932,7 @@ public enum StackItems
     NanoTargetingHelper = 269184,
     MasterpieceAncientBracer = 267780,
     DustBrigadeBracerThirdEdition = 292564,
+    GauntRightShoulder = 291931,
 
 
     // nova dillon
