@@ -334,7 +334,12 @@ namespace CombatHandler.Generic
                             stackEnabled = true;
                             Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
                             break;
-                        case "la":
+                    case "utils2":
+                        stackSlot = EquipSlot.Weap_Utils2;
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
+                        break;
+                    case "la":
                         case "leftarm":
                             stackSlot = EquipSlot.Cloth_LeftArm;
                             stackEnabled = true;
@@ -1036,6 +1041,8 @@ public enum StackItems
     //new event items
 
     CuirassoftheEight = 304481,
+    PatchworkDefensiveDrone   = 306002 ,
+
 
 
 
@@ -1078,6 +1085,8 @@ public enum StackItems
     ClanMeritsAwakenedCombatParagon = 302912,
     ClanMeritsAwakenedDefenseParagon = 302914,
     ClanAdvancementTriumphantDoubleSun = 296380,
+    ClanMeritsParagon = 257113,
+
 
     DocaholicRing = 288744,
     DocaholicRing2 = 288745,

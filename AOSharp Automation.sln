@@ -39,7 +39,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CombatHandler.Generic", "Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utils", "Utils\Utils.csproj", "{486B5B03-20B7-4EB0-83E6-BA9785EC97BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "1", "CombatHandler.Generic - Copy\1.csproj", "{384225B1-7F28-41D2-9038-6474C675ECDB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "assist2", "Assist 2\assist2.csproj", "{9C2960B3-4748-4A04-B3DF-3612708DA6B4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -119,10 +119,10 @@ Global
 		{486B5B03-20B7-4EB0-83E6-BA9785EC97BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{486B5B03-20B7-4EB0-83E6-BA9785EC97BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{486B5B03-20B7-4EB0-83E6-BA9785EC97BF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{384225B1-7F28-41D2-9038-6474C675ECDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{384225B1-7F28-41D2-9038-6474C675ECDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{384225B1-7F28-41D2-9038-6474C675ECDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{384225B1-7F28-41D2-9038-6474C675ECDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C2960B3-4748-4A04-B3DF-3612708DA6B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C2960B3-4748-4A04-B3DF-3612708DA6B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C2960B3-4748-4A04-B3DF-3612708DA6B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C2960B3-4748-4A04-B3DF-3612708DA6B4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -53,8 +53,8 @@ namespace Desu
             RegisterPerkProcessor(PerkHash.Implode, DamagePerk);
 
             //Procs
-            RegisterPerkProcessor(PerkHash.LEProcSoldierConcussiveShot, LEProc , CombatActionPriority.Low);
-            RegisterPerkProcessor(PerkHash.LEProcSoldierGrazeJugularVein, LEProc ,  CombatActionPriority.Medium);
+            RegisterPerkProcessor(PerkHash.LEProcSoldierFuseBodyArmor, LEProc , CombatActionPriority.Low);
+            RegisterPerkProcessor(PerkHash.LEProcSoldierFuriousAmmunition, LEProc ,  CombatActionPriority.Medium);
 
             //Spells
             RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.TotalMirrorShield).OrderByStackingOrder(), AugmentedMirrorShieldMKV);

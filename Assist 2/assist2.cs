@@ -194,7 +194,7 @@ namespace Desu
 
                 }
                 if (prof != Profession.Unknown)
-                    Chat.WriteLine($"Search for {prof.ToString()}", ChatColor.DarkPink);
+                    Chat.WriteLine($"Search for {prof}", ChatColor.DarkPink);
                 foreach (SimpleChar p in DynelManager.Players)
                 {
                     if (isProf == true)
@@ -216,8 +216,10 @@ namespace Desu
                             Chat.WriteLine($"Side: {p.Side}", ChatColor.DarkPink);
                             Chat.WriteLine($"Level: {p.Level}", ChatColor.DarkPink);
                             Chat.WriteLine($"Health: {p.Health}", ChatColor.DarkPink);
-                            Chat.WriteLine($"Nano: {p.Nano}", ChatColor.DarkPink);
-                            Chat.WriteLine($"Location: {p.Position}", ChatColor.DarkPink);
+                            Chat.WriteLine($"Nano: {p.Nano}", ChatColor.DarkPink);     
+                           // This doesn't work well , so will comment it for now
+                          //  Chat.WriteLine($"Nano Resist: {p.GetStat(Stat.NanoResist)}" , ChatColor.Green);
+                          // Chat.WriteLine($"Mater Crea: {p.GetStat(Stat.MaterialCreation)}", ChatColor.Green);
                             Chat.WriteLine("");
                             return;
                         }
@@ -259,13 +261,12 @@ namespace Desu
                 {
                     Chat.WriteLine($"NOOB CALLER detected! {player.Name} is targeting a pet, choose another target.", ChatColor.Red);
 
-                    player = null;
                     currentlyAttacking = "";
                     return;
                 }
 
 
-                if (player.FightingTarget != null && currentlyAttacking != player.FightingTarget.Name || player.FightingTarget != null && player.FightingTarget.Health > 50000 && currentlyAttacking != player.FightingTarget.Name )
+                if (player.FightingTarget != null && currentlyAttacking != player.FightingTarget.Name || player.FightingTarget != null && player.FightingTarget.Health > 50000 && currentlyAttacking != player.FightingTarget.Name)
                 {
                     DynelManager.LocalPlayer.Attack(player.FightingTarget, true);
 
@@ -467,6 +468,7 @@ namespace Desu
                         return;
                     }
                 }
+
             }
             catch (Exception e)
             {
@@ -523,6 +525,8 @@ namespace Desu
                 {
                     Debug.DrawSphere(player.Position, 1, ProfessionCollors[player.Profession]);
                     Debug.DrawLine(DynelManager.LocalPlayer.Position, player.Position, ProfessionCollors[player.Profession]);
+
+
                 }
 
             }
