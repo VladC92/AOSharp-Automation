@@ -164,19 +164,33 @@ namespace MultiboxHelper
             {
 
 
-                Spell.Find(268697 , out Spell curSpell );
+                Spell.Find(268697, out Spell curSpell);
                 if (curSpell != null)
                 {
                     curSpell.Cast();
+                }
+                if (Spell.Find(300846, out Spell curSpell1))
+                {
+                    if (curSpell1 != null)
+                    {
+                        curSpell1.Cast();
+                    }
                 }
             }
             if (leetOff == LeetCommands.off)
             {
                 if (DynelManager.LocalPlayer.Buffs.Find(268697, out Buff buff))
                 {
-                    if (buff.Name == "Veterans L33t Transformation")
+                    if (buff.Name == "Veterans L33t Transformation" )
                     {
                         buff.Remove();
+                    }
+                }
+                if (DynelManager.LocalPlayer.Buffs.Find(300846, out Buff buff1))
+                {
+                    if (buff1.Name == "Pronouncement of Cuteness")
+                    {
+                        buff1.Remove();
                     }
                 }
 
