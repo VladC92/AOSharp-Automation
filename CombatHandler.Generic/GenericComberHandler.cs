@@ -7,6 +7,7 @@ using AOSharp.Common.Helpers;
 using AOSharp.Common.Unmanaged.Imports;
 using AOSharp.Core;
 using AOSharp.Core.Inventory;
+using AOSharp.Core.IPC;
 using AOSharp.Core.UI;
 using SmokeLounge.AOtomation.Messaging.Messages;
 using SmokeLounge.AOtomation.Messaging.Messages.N3Messages;
@@ -15,6 +16,12 @@ namespace CombatHandler.Generic
 {
     public class GenericCombatHandler : AOSharp.Core.Combat.CombatHandler
     {
+
+
+        public enum LeetBuff
+        {
+            leet
+        }
         private double _lastCombatTime = double.MinValue;
         private bool stackEnabled = false;
         private bool dupeEnabled = false;
@@ -123,7 +130,37 @@ namespace CombatHandler.Generic
             Chat.RegisterCommand("dupe", DupeCommand);
 
         }
+        private void LeetCommand(string command, string[] param, ChatWindow chatWindow)
+        {
+            try
+            {
 
+                string commandParam;
+                if (param.Length < 1)
+                    commandParam = "leet";
+                else
+                    commandParam = param[0].ToLower();
+
+                LeetBuff leet;
+                switch (commandParam)
+                {
+                    default:
+                    case "leet":
+                       
+                        LeetBuff = LeetBuff.leet;
+                        break;
+                }
+                IPCChannel.Broadcast(new LeetMessage()
+                {
+                    buff = (int)=xcc qwqw
+                });
+
+            }
+            catch (Exception e)
+            {
+                Chat.WriteLine(e.Message);
+            }
+        }
 
         private void DupeCommand(string command, string[] param, ChatWindow chatWindow)
         {

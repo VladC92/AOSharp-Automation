@@ -19,6 +19,7 @@ namespace MultiboxHelper.IPCMessages
         Floor,
         Test,
         Doc,
-        Keeper
+        Keeper ,
+        Leet
     }
 }

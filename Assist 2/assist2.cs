@@ -1,4 +1,4 @@
-﻿
+﻿using AOSharp.Core.IPC;
 using AOSharp.Core;
 using AOSharp.Core.UI;
 using CombatHandler.Generic;
@@ -10,10 +10,20 @@ using Vector3 = AOSharp.Common.GameData.Vector3;
 using System.Linq;
 using System.Threading;
 
+
+
+
 namespace Desu
 {
     public class Assist : AOPluginEntry
     {
+        public enum LeetCommands
+        {
+            on,
+            off
+        }
+
+        private IPCChannel IPCChannel;
         SimpleChar player = null;
         private List<SimpleChar> _playersToHighlight = new List<SimpleChar>();
         private string currentlyAttacking = "";
@@ -68,10 +78,14 @@ namespace Desu
             Chat.RegisterCommand("pvpassist", PlayerAssist);
             Chat.RegisterCommand("p", PlayerAssist);
             Chat.RegisterCommand("find", FindPlayers);
-            Chat.RegisterCommand("stop", StopAssist);
+            Chat.RegisterCommand("leet", LeetTransform);
 
 
         }
+
+
+
+
         private void FindPlayers(string command, string[] param, ChatWindow chatWindow)
         {
 
@@ -216,10 +230,10 @@ namespace Desu
                             Chat.WriteLine($"Side: {p.Side}", ChatColor.DarkPink);
                             Chat.WriteLine($"Level: {p.Level}", ChatColor.DarkPink);
                             Chat.WriteLine($"Health: {p.Health}", ChatColor.DarkPink);
-                            Chat.WriteLine($"Nano: {p.Nano}", ChatColor.DarkPink);     
-                           // This doesn't work well , so will comment it for now
-                          //  Chat.WriteLine($"Nano Resist: {p.GetStat(Stat.NanoResist)}" , ChatColor.Green);
-                          // Chat.WriteLine($"Mater Crea: {p.GetStat(Stat.MaterialCreation)}", ChatColor.Green);
+                            Chat.WriteLine($"Nano: {p.Nano}", ChatColor.DarkPink);
+                            // This doesn't work well , so will comment it for now
+                            //  Chat.WriteLine($"Nano Resist: {p.GetStat(Stat.NanoResist)}" , ChatColor.Green);
+                            // Chat.WriteLine($"Mater Crea: {p.GetStat(Stat.MaterialCreation)}", ChatColor.Green);
                             Chat.WriteLine("");
                             return;
                         }
@@ -250,20 +264,18 @@ namespace Desu
                 if (player.FightingTarget == null && currentlyAttacking != "")
                 {
 
-
-
                     Chat.WriteLine($"Player is not in fight", ChatColor.Yellow);
                     currentlyAttacking = "";
                     return;
                 }
 
-                if (player.FightingTarget != null && player.FightingTarget.IsPet)
-                {
-                    Chat.WriteLine($"NOOB CALLER detected! {player.Name} is targeting a pet, choose another target.", ChatColor.Red);
+                //  if (player.FightingTarget != null && player.FightingTarget.IsPet)
+                // {
+                //   Chat.WriteLine($"NOOB CALLER detected! {player.Name} is targeting a pet, choose another target.", ChatColor.Red);
 
-                    currentlyAttacking = "";
-                    return;
-                }
+                //   currentlyAttacking = "";
+                //    return;
+                // }
 
 
                 if (player.FightingTarget != null && currentlyAttacking != player.FightingTarget.Name || player.FightingTarget != null && player.FightingTarget.Health > 50000 && currentlyAttacking != player.FightingTarget.Name)
@@ -348,6 +360,13 @@ namespace Desu
                                 return;
                             }
                         }
+                        if (player.FightingTarget != null && player.FightingTarget.IsPet)
+                        {
+                            Chat.WriteLine($"NOOB CALLER detected! {player.Name} is targeting a pet, choose another target.", ChatColor.Red);
+
+                            //   currentlyAttacking = "";
+                            return;
+                        }
                         else
                         {
                             DynelManager.LocalPlayer.Attack(player.FightingTarget, true);
@@ -366,10 +385,6 @@ namespace Desu
                             }
 
                         }
-
-
-
-
 
                         Chat.WriteLine($"{player.Name} is targeting " + player.FightingTarget.Name + "\n" +
                       $" Breed {player.FightingTarget.Breed} \n" +
@@ -414,44 +429,55 @@ namespace Desu
                 Chat.WriteLine(e.Message);
             }
         }
-        private void StopAssist(string command, string[] param, ChatWindow chatWindow)
-        {
-
-            if (param.Length == 1)
-                player = null;
-            Chat.WriteLine($"Stopped Assist", ChatColor.Yellow);
-            return;
-        }
-        /*
-        private void SpecialAttacks()
+        private void LeetTransform(string command, string[] param, ChatWindow chatWindow)
         {
             try
             {
-                if (player.FightingTarget != null && player.FightingTarget.IsPlayer && currentlyAttacking != player.FightingTarget.Name)
+
+
+                if (param.Length < 1)
                 {
-
-                    foreach (SpecialAttack specialAttack in DynelManager.LocalPlayer.SpecialAttacks)
-                    {
-                        if (specialAttack.IsAvailable())
-                        {
-                            SpecialAttack.AimedShot.UseOn(player.FightingTarget);
-                            SpecialAttack.SneakAttack.UseOn(player.FightingTarget);
-
-                        }
-
-                    }
-                } else
-                {
-                    player = null;
+                    Chat.WriteLine($"Invalid command ", ChatColor.Yellow);
                     return;
                 }
+                if (param.Length == 1)
+                {
+
+                    string leetTransform = param[0].ToLower();
+
+                    switch (leetTransform)
+                    {
+                        default:
+                        case "on":
+
+                            Spell.Find(268697, out Spell curSpell);
+                            if (curSpell != null)
+                            {
+                                curSpell.Cast();
+                            }
+                            break;
+
+                        case "off":
+
+                            if (DynelManager.LocalPlayer.Buffs.Find(268697, out Buff buff))
+                            {
+                                if (buff.Name == "Veterans L33t Transformation")
+                                {
+                                    buff.Remove();
+                                }
+                            }
+                            break;
+
+                    }
+                }
             }
+
             catch (Exception e)
             {
                 Chat.WriteLine(e.Message);
             }
+
         }
-                       */
         private void DrawFoundPlayers()
         {
             try

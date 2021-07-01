@@ -24,7 +24,7 @@ namespace MultiboxHelper
         [DllImport("user32.dll")]
         private static extern IntPtr GetForegroundWindow();
 
-     
+
         private IPCChannel IPCChannel;
         private bool syncMoves = true;
         private bool syncAttacks = true;
@@ -40,9 +40,9 @@ namespace MultiboxHelper
         MovementController movementController = new MovementController(true);
         private Vector3 floor2_support_pos = new Vector3(312.0, 1.5, 335.5);
         private Vector3 floor2_tank_pos = new Vector3(319.0, 1.5, 366.5);
-        private Vector3 red_pedestal_12man = new Vector3(35.6, 29.3, 30.0);  
+        private Vector3 red_pedestal_12man = new Vector3(35.6, 29.3, 30.0);
         private Vector3 yellow_pedestal_12man = new Vector3(164.2, 29.3, 30.4);
-        
+
 
         public enum EngiDebufAuras
         {
@@ -58,6 +58,11 @@ namespace MultiboxHelper
         public enum DocCommands
         {
             CH
+        }
+        public enum LeetCommands
+        {
+            on,
+            off
         }
 
         private bool IsActiveWindow => GetForegroundWindow() == Process.GetCurrentProcess().MainWindowHandle;
@@ -77,6 +82,7 @@ namespace MultiboxHelper
             IPCChannel.RegisterCallback((int)IPCOpcode.Doc, OnDocMessage);
             IPCChannel.RegisterCallback((int)IPCOpcode.Floor, OnFloorMessage);
             IPCChannel.RegisterCallback((int)IPCOpcode.Test, OnTestMessage);
+            IPCChannel.RegisterCallback((int)IPCOpcode.Leet, OnLeetMessage);
 
 
             //_menu = new Menu("MultiboxHelper", "MultiboxHelper");
@@ -97,6 +103,7 @@ namespace MultiboxHelper
             Chat.RegisterCommand("poh", FloorCommand);
             Chat.RegisterCommand("floor", FloorCommand);
             Chat.RegisterCommand("test", TestCommand);
+            Chat.RegisterCommand("leet", LeetTransform);
 
             Game.OnUpdate += OnUpdate;
 
@@ -109,7 +116,7 @@ namespace MultiboxHelper
             {
                 Vector3 pos = new Vector3(639.9, 36.4, 1555.8);
 
-                if (param.Length == 4 )
+                if (param.Length == 4)
                 {
                     pos = new Vector3(float.Parse(param[1]), float.Parse(param[2]), float.Parse(param[3]));
                 }
@@ -124,7 +131,7 @@ namespace MultiboxHelper
                 Chat.WriteLine(e.Message);
             }
         }
-        
+
         private void AntiFearCommand(string command, string[] param, ChatWindow chatWindow)
         {
             try
@@ -143,6 +150,95 @@ namespace MultiboxHelper
             {
                 Chat.WriteLine(e.Message);
             }
+        }
+        private void OnLeetMessage(int sender, IPCMessage msg)
+        {
+
+            if (Game.IsZoning)
+                return;
+            LeetCommands leetOn = LeetCommands.on;
+            LeetCommands leetOff = LeetCommands.off;
+
+
+            if (leetOn == LeetCommands.on)
+            {
+
+
+                Spell.Find(268697 , out Spell curSpell );
+                if (curSpell != null)
+                {
+                    curSpell.Cast();
+                }
+            }
+            if (leetOff == LeetCommands.off)
+            {
+                if (DynelManager.LocalPlayer.Buffs.Find(268697, out Buff buff))
+                {
+                    if (buff.Name == "Veterans L33t Transformation")
+                    {
+                        buff.Remove();
+                    }
+                }
+
+            }
+
+
+        }
+        private void LeetTransform(string command, string[] param, ChatWindow chatWindow)
+        {
+            try
+            {
+
+
+                if (param.Length < 1)
+                {
+                    Chat.WriteLine($"Invalid command ", ChatColor.Yellow);
+                    return;
+                }
+
+
+                if (param.Length == 1)
+                {
+
+                    string leetTransform = param[0].ToLower();
+                    LeetCommands leetCommands;
+                    switch (leetTransform)
+                    {
+                        default:
+                        case "on":
+                            leetCommands = LeetCommands.on;
+                            Spell.Find(268697, out Spell curSpell);
+                            if (curSpell != null)
+                            {
+                                curSpell.Cast();
+                            }
+                            break;
+
+                        case "off":
+                            leetCommands = LeetCommands.off;
+                            if (DynelManager.LocalPlayer.Buffs.Find(268697, out Buff buff))
+                            {
+                                if (buff.Name == "Veterans L33t Transformation")
+                                {
+                                    buff.Remove();
+                                }
+                            }
+                            break;
+
+                    }
+                    IPCChannel.Broadcast(new LeetMessage()
+                    {
+                        buff = (int)leetCommands
+                    });
+
+                }
+
+            }
+            catch (Exception e)
+            {
+                Chat.WriteLine(e.Message);
+            }
+
         }
         private void FloorCommand(string command, string[] param, ChatWindow chatWindow)
         {
@@ -290,8 +386,8 @@ namespace MultiboxHelper
                 IPCChannel.Broadcast(new DocMessage()
                 {
                     buff = (int)docCommands
-                }) ; 
-                 
+                });
+
             }
             catch (Exception e)
             {
@@ -448,7 +544,7 @@ namespace MultiboxHelper
                 {
                     //Chat.WriteLine($"{backpack.Identity} - IsOpen:{backpack.IsOpen}{((backpack.IsOpen) ? $" - Items:{backpack.Items.Count}" : "")}");
 
-                    foreach(Item i in backpack.Items)
+                    foreach (Item i in backpack.Items)
                     {
                         if (i.Name == "Insurance Claim Recall Beacon")
                         {
@@ -461,13 +557,13 @@ namespace MultiboxHelper
                     }
                 }
                 SimpleItem simpleItem = DynelManager.GetDynel<SimpleItem>(genericCmdMsg.Target);
-                if (genericCmdMsg.Action == GenericCmdAction.Use && 
-                    (genericCmdMsg.Target.Type == IdentityType.Terminal )
-/*                    || 
-                        (
-                            genericCmdMsg.Target.Name == "Keys" &&
-                            genericCmdMsg.Target.Type == IdentityType.Backpack
-                        )*/
+                if (genericCmdMsg.Action == GenericCmdAction.Use &&
+                    (genericCmdMsg.Target.Type == IdentityType.Terminal)
+                    /*                    || 
+                                            (
+                                                genericCmdMsg.Target.Name == "Keys" &&
+                                                genericCmdMsg.Target.Type == IdentityType.Backpack
+                                            )*/
                     )
                 {
 
@@ -528,7 +624,7 @@ namespace MultiboxHelper
         private void OnAttackMessage(int sender, IPCMessage msg)
         {
             //if (!Team.IsInTeam || IsActiveWindow)
-              //  return;
+            //  return;
 
             if (Game.IsZoning)
                 return;
@@ -552,7 +648,7 @@ namespace MultiboxHelper
                         if (npc.HealthPercent > 20.0 &&
                             (
                              DynelManager.LocalPlayer.Profession != Profession.Enforcer &&
-                             DynelManager.LocalPlayer.Profession != Profession.Soldier 
+                             DynelManager.LocalPlayer.Profession != Profession.Soldier
                             )
                            )
                         {
@@ -589,7 +685,7 @@ namespace MultiboxHelper
             UseMessage useMsg = (UseMessage)msg;
             DynelManager.GetDynel<SimpleItem>(useMsg.Target)?.Use();
         }
-        
+
         private void OnSyncMovesMessage(int sender, IPCMessage msg)
         {
             if (!Team.IsInTeam || IsActiveWindow)
@@ -612,7 +708,7 @@ namespace MultiboxHelper
             SyncAttacksMessage saMsg = (SyncAttacksMessage)msg;
             syncAttacks = saMsg.syncAttacks;
         }
-        
+
         private void OnDocMessage(int sender, IPCMessage msg)
         {
 
@@ -739,7 +835,7 @@ namespace MultiboxHelper
                 if (DynelManager.LocalPlayer.Position == altar.Position)
                     return true;
             }
-                
+
             return false;
         }
         private SimpleChar FindPOHGreenAltar()
@@ -790,7 +886,7 @@ namespace MultiboxHelper
                     }
 
                     if (needGreenLight == false && IsLocalPlayerOnAltar() == true)
-                    { 
+                    {
                         PositionProfsForFloor5();
                         Floor5Attack();
                     }
