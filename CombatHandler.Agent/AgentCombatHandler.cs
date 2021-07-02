@@ -47,7 +47,7 @@ namespace Desu
             RegisterSpellProcessor(RelevantNanos.WayofTheExecutioner, GenericBuff);
             RegisterSpellProcessor(RelevantNanos.CompleteHealing, CompleteHeal);
             RegisterSpellProcessor(RelevantNanos.LifegivingElixir, LifegivingElixir);
-            RegisterSpellProcessor(RelevantNanos.FpDoc, GenericBuff);
+          //  RegisterSpellProcessor(RelevantNanos.FpDoc, GenericBuff);
             RegisterSpellProcessor(RelevantNanos.ImprovedInstinctiveControl, GenericBuff);
             RegisterSpellProcessor(RelevantNanos.ImprovedNanoRepulsor, GenericBuff);
             RegisterSpellProcessor(RelevantNanos.ContinuousReconstruction, GenericBuff);
@@ -73,8 +73,8 @@ namespace Desu
 
             _menu = new Menu("CombatHandler.Agent", "CombatHandler.Agent");
             _menu.AddItem(new MenuBool("UseDebuff", "Agent Debuffing", true));
-            _menu.AddItem(new MenuBool("UseUBT", "Agent Ubting", true));
-            _menu.AddItem(new MenuBool("BuffTeamMembers", "BuffTeamMembers?", false));
+            _menu.AddItem(new MenuBool("UseUBT", "Agent Ubting", false));
+        
 
             OptionPanel.AddMenu(_menu);
 

@@ -25,25 +25,25 @@ namespace Desu
             RegisterPerkProcessor(PerkHash.ThermalDetonation, TargetedDamagePerk);
             RegisterPerkProcessor(PerkHash.Supernova, TargetedDamagePerk);
             RegisterPerkProcessor(PerkHash.BreachDefenses, TargetedDamagePerk);
-            RegisterPerkProcessor(PerkHash.ProgramOverload, TargetedDamagePerk , CombatActionPriority.High);
-            RegisterPerkProcessor(PerkHash.BreachDefenses, DamagePerk );
+            RegisterPerkProcessor(PerkHash.ProgramOverload, TargetedDamagePerk, CombatActionPriority.High);
+            RegisterPerkProcessor(PerkHash.BreachDefenses, DamagePerk);
             RegisterPerkProcessor(PerkHash.NotumOverflow, DamagePerk);
 
-           
 
 
-        
+
+
 
 
             //Spells
             RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.NullitySphereNano).OrderByStackingOrder(), NullitySphere, CombatActionPriority.High);
-         //   RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.AbsorbACBuff).OrderByStackingOrder(), GenericBuff, CombatActionPriority.High);
-          //  RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.NanoResistanceDebuff_LineA).OrderByStackingOrder(), ConstantBarrage, CombatActionPriority.Low);
-  
+            //   RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.AbsorbACBuff).OrderByStackingOrder(), GenericBuff, CombatActionPriority.High);
+            //  RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.NanoResistanceDebuff_LineA).OrderByStackingOrder(), ConstantBarrage, CombatActionPriority.Low);
+
 
             RegisterSpellProcessor(RelevantNanos.NanobotAegis, NanobotAegis);
             RegisterSpellProcessor(RelevantNanos.IzgimmersWealth, IzgimmersWealth);
-           RegisterSpellProcessor(RelevantNanos.Garuk, SingleTargetNuke);
+            RegisterSpellProcessor(RelevantNanos.Garuk, SingleTargetNuke);
             RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.DOTNanotechnicianStrainA).OrderByStackingOrder(), AiDotNuke);
 
 
@@ -64,19 +64,19 @@ namespace Desu
 
             RegisterSpellProcessor(RelevantNanos.TacticalNuke, SingleTargetNuke);
             RegisterSpellProcessor(RelevantNanos.IzgimmersUltimatum, SingleTargetNuke);
-            RegisterSpellProcessor(RelevantNanos.DefilementofBeing , SingleTargetNuke);
-            RegisterSpellProcessor(RelevantNanos.IzgimmerCorrosiveTear , SingleTargetNuke);
-           RegisterSpellProcessor(RelevantNanos.OpticPlague, Blind , CombatActionPriority.High);
+            RegisterSpellProcessor(RelevantNanos.DefilementofBeing, SingleTargetNuke);
+            RegisterSpellProcessor(RelevantNanos.IzgimmerCorrosiveTear, SingleTargetNuke);
+            RegisterSpellProcessor(RelevantNanos.OpticPlague, Blind, CombatActionPriority.High);
 
 
 
             RegisterSpellProcessor(RelevantNanos.NanobotShelter, GenericBuff);
             RegisterSpellProcessor(RelevantNanos.NanoBuffs, GenericBuff);
-           // RegisterSpellProcessor(RelevantNanos.NotumOverload, GenericBuff);
+            // RegisterSpellProcessor(RelevantNanos.NotumOverload, GenericBuff);
             RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.Psy_IntBuff).OrderByStackingOrder(), GenericBuff);
             RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.Psy_IntBuff).OrderByStackingOrder(), GenericBuff);
-           RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.NanoOverTime_LineA).OrderByStackingOrder(), GenericBuff);
-      
+            RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.NanoOverTime_LineA).OrderByStackingOrder(), GenericBuff);
+
             RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.NanoDamageMultiplierBuffs).OrderByStackingOrder(), GenericBuff);
             RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.NPCostBuff).OrderByStackingOrder(), GenericBuff);
 
@@ -87,11 +87,11 @@ namespace Desu
             RegisterSpellProcessor(RelevantNanos.NanobotShelter, GenericBuff);
 
             _menu = new Menu("CombatHandler.NT", "CombatHandler.NT");
-            
+
             _menu.AddItem(new MenuBool("UseAoeNuke", "Use AI DoT", true));
             _menu.AddItem(new MenuBool("UseAIDot", "Use AI DoT", false));
             _menu.AddItem(new MenuBool("UseBlind", "Use Blind", false));
-     
+
             OptionPanel.AddMenu(_menu);
         }
 
@@ -105,7 +105,7 @@ namespace Desu
         private bool NullitySphere(Spell spell, SimpleChar fightingtarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
         {
             actionTarget.ShouldSetTarget = false;
-            return DynelManager.LocalPlayer.HealthPercent < 90 && !DynelManager.LocalPlayer.Buffs.Contains(RelevantNanos.NanobotAegis);
+            return DynelManager.LocalPlayer.HealthPercent < 75 && !DynelManager.LocalPlayer.Buffs.Contains(RelevantNanos.NanobotAegis);
         }
 
         private bool SingleTargetNuke(Spell spell, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
@@ -166,7 +166,7 @@ namespace Desu
 
             return true;
         }
-      
+
         private static class RelevantNanos
         {
             public const int NanobotAegis = 302074;
