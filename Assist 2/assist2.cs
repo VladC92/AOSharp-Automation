@@ -78,7 +78,7 @@ namespace Desu
             Chat.RegisterCommand("pvpassist", PlayerAssist);
             Chat.RegisterCommand("p", PlayerAssist);
             Chat.RegisterCommand("find", FindPlayers);
-            Chat.RegisterCommand("leet", LeetTransform);
+        
 
 
         }
@@ -429,55 +429,7 @@ namespace Desu
                 Chat.WriteLine(e.Message);
             }
         }
-        private void LeetTransform(string command, string[] param, ChatWindow chatWindow)
-        {
-            try
-            {
 
-
-                if (param.Length < 1)
-                {
-                    Chat.WriteLine($"Invalid command ", ChatColor.Yellow);
-                    return;
-                }
-                if (param.Length == 1)
-                {
-
-                    string leetTransform = param[0].ToLower();
-
-                    switch (leetTransform)
-                    {
-                        default:
-                        case "on":
-
-                            Spell.Find(268697, out Spell curSpell);
-                            if (curSpell != null)
-                            {
-                                curSpell.Cast();
-                            }
-                            break;
-
-                        case "off":
-
-                            if (DynelManager.LocalPlayer.Buffs.Find(268697, out Buff buff))
-                            {
-                                if (buff.Name == "Veterans L33t Transformation")
-                                {
-                                    buff.Remove();
-                                }
-                            }
-                            break;
-
-                    }
-                }
-            }
-
-            catch (Exception e)
-            {
-                Chat.WriteLine(e.Message);
-            }
-
-        }
         private void DrawFoundPlayers()
         {
             try
