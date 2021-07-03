@@ -51,15 +51,16 @@ namespace Desu
             RegisterPerkProcessor(PerkHash.PointBlank, DamagePerk);
             RegisterPerkProcessor(PerkHash.Collapser, DamagePerk);
             RegisterPerkProcessor(PerkHash.Implode, DamagePerk);
+            RegisterPerkProcessor(PerkHash.DrawBlood, DamagePerk);
 
             //Procs
             RegisterPerkProcessor(PerkHash.LEProcSoldierFuseBodyArmor, LEProc , CombatActionPriority.Low);
             RegisterPerkProcessor(PerkHash.LEProcSoldierFuriousAmmunition, LEProc ,  CombatActionPriority.Medium);
 
             //Spells
-            RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.TotalMirrorShield).OrderByStackingOrder(), AugmentedMirrorShieldMKV);
-            RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.DrainHeal).OrderByStackingOrder(), DrainHeal);
-            RegisterSpellProcessor(RelevantNanos.AdrenalineRush, AdrenalineRush);
+          //  RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.TotalMirrorShield).OrderByStackingOrder(), AugmentedMirrorShieldMKV);
+          //  RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.DrainHeal).OrderByStackingOrder(), DrainHeal);
+            RegisterSpellProcessor(RelevantNanos.DontFeartheReaper, DontFearTheReaper);
             RegisterSpellProcessor(RelevantNanos.Distinctvictim, SingleTargetTaunt);
             RegisterSpellProcessor(RelevantNanos.Fat, GenericBuff);
             RegisterSpellProcessor(RelevantNanos.OffensiveSteamroller, GenericBuff);
@@ -72,6 +73,7 @@ namespace Desu
             RegisterSpellProcessor(RelevantNanos.ImprovedTotalFocus, GenericBuff);
             RegisterSpellProcessor(RelevantNanos.TotalCombatSurvival, GenericBuff);
             RegisterSpellProcessor(RelevantNanos.ArtOfWar, GenericBuff);
+            RegisterSpellProcessor(RelevantNanos.AugmentedMirrorShieldMKIII, AugmentedMirrorShield);
 
 
             //Items
@@ -117,34 +119,26 @@ namespace Desu
             return true;
         }
 
-        private bool AdrenalineRush(Spell spell, SimpleChar fightingtarget, ref (SimpleChar Target, bool ShouldSetTarget) actiontarget)
+        private bool DontFearTheReaper(Spell spell, SimpleChar fightingtarget, ref (SimpleChar Target, bool ShouldSetTarget) actiontarget)
         {
             //if (!DynelManager.LocalPlayer.IsAttacking || fightingtarget == null)
             //    return false;
 
-            if (DynelManager.LocalPlayer.HealthPercent <= 30)
+            if (DynelManager.LocalPlayer.HealthPercent <= 40)
                 return true;
 
             return false;
         }
 
-        private bool AugmentedMirrorShieldMKV(Spell spell, SimpleChar fightingtarget, ref (SimpleChar Target, bool ShouldSetTarget) actiontarget)
+        private bool AugmentedMirrorShield(Spell spell, SimpleChar fightingtarget, ref (SimpleChar Target, bool ShouldSetTarget) actiontarget)
         {
             if (!DynelManager.LocalPlayer.IsAttacking || fightingtarget == null)
                 return false;
 
-            if (DynelManager.LocalPlayer.HealthPercent <= 55 && spell.IsReady)
+            if (DynelManager.LocalPlayer.HealthPercent <= 60 && spell.IsReady)
                 return true;
 
             return true;
-        }
-        private bool DrainHeal(Spell spell, SimpleChar fightingtarget, ref (SimpleChar Target, bool ShouldSetTarget) actiontarget)
-        {
-
-            if (DynelManager.LocalPlayer.HealthPercent <= 45 && spell.IsReady)
-                return true;
-
-            return false;
         }
         private static class RelevantNanos
         {
@@ -162,6 +156,10 @@ namespace Desu
             public const int ImprovedTotalFocus = 270806;
             public const int ImprovedSoldierClipJunkie = 273402;
             public const int ArtOfWar = 275027;
+            public const int AugmentedMirrorShieldMKIII = 223183;
+            public const int DontFeartheReaper = 29241;
+
+
         }
 
         private static class RelevantItems
