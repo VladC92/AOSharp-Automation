@@ -26,6 +26,7 @@ namespace Desu
         private IPCChannel IPCChannel;
         SimpleChar player = null;
         private List<SimpleChar> _playersToHighlight = new List<SimpleChar>();
+        private List<SimpleChar> assistedPlayer = new List<SimpleChar>();
         private string currentlyAttacking = "";
         private Dictionary<Profession, Vector3> ProfessionCollors = new Dictionary<Profession, Vector3>
 
@@ -78,7 +79,7 @@ namespace Desu
             Chat.RegisterCommand("pvpassist", PlayerAssist);
             Chat.RegisterCommand("p", PlayerAssist);
             Chat.RegisterCommand("find", FindPlayers);
-        
+
 
 
         }
@@ -339,7 +340,9 @@ namespace Desu
 
                 foreach (SimpleChar p in DynelManager.Players)
                 {
+                    int time = (int)Time.NormalTime;
 
+                    assistedPlayer.Add(p);
 
                     if (name == p.Name.ToLower())
                     {
@@ -350,6 +353,7 @@ namespace Desu
                         Chat.WriteLine($"Assisting  {player.Name}  , " +
                         $"\n Breed :{player.Breed} ,\n" +
                         $" Health : {player.Health}  \n" +
+                        $" Nano :  { player.Nano} \n" +
                         $" Profession : {player.Profession} ", ChatColor.Yellow);
 
                         AssistAttack(player);
@@ -408,8 +412,8 @@ namespace Desu
                 if (player != null)
                 {
 
-                    Debug.DrawSphere(player.Position, 1, DebuggingColor.Red);
-                    Debug.DrawLine(DynelManager.LocalPlayer.Position, player.Position, DebuggingColor.Red);
+                    Debug.DrawSphere(player.Position, 1, DebuggingColor.LightBlue);
+                    Debug.DrawLine(DynelManager.LocalPlayer.Position, player.Position, DebuggingColor.LightBlue);
 
 
                     if (player.FightingTarget != null)
@@ -434,6 +438,8 @@ namespace Desu
         {
             try
             {
+                int time = (int)Time.NormalTime;
+
                 foreach (SimpleChar p in _playersToHighlight)
                 {
                     bool found = false;
@@ -445,8 +451,8 @@ namespace Desu
                     {
                         return;
                     }
-                }
 
+                }
             }
             catch (Exception e)
             {
@@ -458,12 +464,16 @@ namespace Desu
             player = null;
             _playersToHighlight.Clear();
             currentlyAttacking = "";
+
+            assistedPlayer.Clear();
         }
         private void PvpKeyProfs()
         {
+            _ = (int)Time.NormalTime;
 
             foreach (SimpleChar player in DynelManager.Players)
             {
+
                 bool isKeyProf = false;
 
                 switch (player.Profession)
@@ -499,7 +509,7 @@ namespace Desu
                         break;
 
                 }
-                if (isKeyProf && player.Side == Side.OmniTek && player.Level > 218 || isKeyProf && player.Side == Side.OmniTek && player.Level == 150 || isKeyProf && player.Side == Side.OmniTek && player.Level == 158 || isKeyProf && player.Side == Side.OmniTek && player.Level == 170 || isKeyProf && player.Side == Side.OmniTek && player.Level == 118)
+                if (isKeyProf && player.Side == Side.OmniTek && player.Level > 218 ) //|| isKeyProf && player.Side == Side.OmniTek && player.Level == 150 || isKeyProf && player.Side == Side.OmniTek && player.Level == 158 || isKeyProf && player.Side == Side.OmniTek && player.Level == 170 || isKeyProf && player.Side == Side.OmniTek && player.Level == 118)
                 {
                     Debug.DrawSphere(player.Position, 1, ProfessionCollors[player.Profession]);
                     Debug.DrawLine(DynelManager.LocalPlayer.Position, player.Position, ProfessionCollors[player.Profession]);

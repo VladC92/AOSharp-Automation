@@ -138,7 +138,7 @@ namespace Desu
             if (DynelManager.LocalPlayer.HealthPercent <= 60 && spell.IsReady)
                 return true;
 
-            return true;
+            return false;
         }
         private static class RelevantNanos
         {

@@ -20,7 +20,7 @@ namespace Radar
         {
             try
             {
-                Chat.WriteLine("Radar loaded!");
+                Chat.WriteLine("Radar Reloaded loaded!" , ChatColor.Orange);
                 _trackedNames = new List<string>();
                 Chat.RegisterCommand("track", TrackCallback);
                 Chat.RegisterCommand("untrack", UntrackCallback);
@@ -104,7 +104,7 @@ namespace Radar
                 }
                 else
                 {
-                    if(player.Buffs.Contains(new [] {216382, 284620, 202732, 214879 }) && time % 2 == 0)
+                    if(player.Buffs.Contains(new [] {216382, 284620, 202732, 214879 }) && time % 2 == 0 && player.Side == Side.OmniTek && player.Level > 218)
                     {
                         debuggingColor = DebuggingColor.Red;
                     }
@@ -112,15 +112,11 @@ namespace Radar
                     {
                         switch (player.Side)
                         {
-                            case Side.Clan:
-                                debuggingColor = DebuggingColor.Yellow;
-                                break;
+                         
                             case Side.OmniTek:
                                 debuggingColor = DebuggingColor.LightBlue;
                                 break;
-                            case Side.Neutral:
-                                debuggingColor = DebuggingColor.Purple;
-                                break;
+                         
                         }
                     }
                 }

@@ -11,7 +11,7 @@ namespace Desu
             try
             {
                 Chat.WriteLine("Mp Combat Handler Loaded!");
-                AOSharp.Core.Combat.CombatHandler.Set(new MpCombatHandler());
+                AOSharp.Core.Combat.CombatHandler.Set(new MPCombatHandler());
               
             }
             catch (Exception e)
