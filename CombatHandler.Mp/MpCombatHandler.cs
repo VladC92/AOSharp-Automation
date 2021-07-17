@@ -18,21 +18,29 @@ namespace Desu
         private double _lastPetSyncTime = Time.NormalTime;
         protected double _lastZonedTime = Time.NormalTime;
 
-        public MPCombatHandler() : base    ()
+        public MPCombatHandler() : base()
         {
-            
+
 
             //LE Procs
-            RegisterPerkProcessor(PerkHash.LEProcMetaPhysicistAnticipatedEvasion, LEProc, CombatActionPriority.Low);
-            RegisterPerkProcessor(PerkHash.LEProcMetaPhysicistSuppressFury, LEProc, CombatActionPriority.Low);
+            RegisterPerkProcessor(PerkHash.LEProcMetaPhysicistAnticipatedEvasion, LEProc);
+            RegisterPerkProcessor(PerkHash.LEProcMetaPhysicistEgoStrike, LEProc);
+
+
+            // Perks
+
+
+            RegisterPerkProcessor(PerkHash.Clearshot, TargetedDamagePerk);
+            RegisterPerkProcessor(PerkHash.Popshot, TargetedDamagePerk);
+            RegisterPerkProcessor(PerkHash.Clearsight, TargetedDamagePerk);
 
             //Self buffs
-            
+
             RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.MartialArtistBowBuffs).OrderByStackingOrder(), GenericBuff);
             RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.Psy_IntBuff).OrderByStackingOrder(), GenericBuff);
 
-         
-           
+
+
             RegisterSpellProcessor(RelevantNanos.CostBuffs, TeamBuff);
 
             //Debuffs
@@ -41,7 +49,7 @@ namespace Desu
             RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.MPDamageDebuffLineA).OrderByStackingOrder(), DamageDebuff);
             RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.MPDamageDebuffLineB).OrderByStackingOrder(), DamageDebuff);
             RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.MetaPhysicistDamageDebuff).OrderByStackingOrder(), DamageDebuff);
-          
+
             RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.NanoResistanceDebuff_LineA).OrderByStackingOrder(), NanoResistanceDebuff);
             RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.NanoShutdownDebuff).OrderByStackingOrder(), NanoShutdownDebuff);
 
@@ -95,7 +103,7 @@ namespace Desu
         protected bool ToggledDebuffTarget(string settingName, Spell spell, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
         {
             // Check if we are fighting and if debuffing is enabled
-            if (fightingTarget == null )
+            if (fightingTarget == null)
             {
                 return false;
             }
@@ -115,7 +123,7 @@ namespace Desu
         protected bool ToggledDebuffTarget(string settingName, Spell spell, SimpleChar fightingTarget, NanoLine debuffNanoLine, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
         {
             // Check if we are fighting and if debuffing is enabled
-            if (fightingTarget == null )
+            if (fightingTarget == null)
             {
                 return false;
             }
@@ -144,7 +152,7 @@ namespace Desu
 
         protected virtual bool PetSpawnerItem(Dictionary<int, PetSpellData> petData, Item item, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
         {
-          
+
 
             if (!CanLookupPetsAfterZone())
                 return false;
@@ -187,7 +195,7 @@ namespace Desu
 
         protected bool PetTargetBuff(NanoLine buffNanoLine, PetType petType, Spell spell, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
         {
-            if  (!CanLookupPetsAfterZone())
+            if (!CanLookupPetsAfterZone())
             {
                 return false;
             }
@@ -233,7 +241,7 @@ namespace Desu
             return ToggledDebuffTarget("UseNukes", spell, fightingTarget, NanoLine.MetaphysicistMindDamageNanoDebuffs, ref actionTarget);
         }
 
-  
+
 
 
 
@@ -247,7 +255,7 @@ namespace Desu
 
         private bool SingleTargetNuke(Spell spell, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
         {
-            if (fightingTarget == null )
+            if (fightingTarget == null)
             {
                 return false;
             }
@@ -257,7 +265,7 @@ namespace Desu
 
         private bool MezzPetBuff(Spell spell, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
         {
-            if (fightingTarget != null )
+            if (fightingTarget != null)
             {
                 return false;
             }
@@ -267,7 +275,7 @@ namespace Desu
 
         private bool HealPetBuff(Spell spell, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
         {
-            if (fightingTarget != null )
+            if (fightingTarget != null)
             {
                 return false;
             }
@@ -277,7 +285,7 @@ namespace Desu
 
         private bool AttackPetBuff(Spell spell, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
         {
-            if (fightingTarget != null )
+            if (fightingTarget != null)
             {
                 return false;
             }
@@ -411,7 +419,7 @@ namespace Desu
                 }
             }
         }
-              protected static void CancelBuffs(int[] buffsToCancel)
+        protected static void CancelBuffs(int[] buffsToCancel)
         {
             foreach (Buff buff in DynelManager.LocalPlayer.Buffs)
             {
@@ -459,7 +467,7 @@ namespace Desu
             SHIELD = 5
         }
 
-       
+
     }
     public class PetSpellData
     {

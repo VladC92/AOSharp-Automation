@@ -51,7 +51,6 @@ namespace CombatHandler.Generic
             RegisterPerkProcessor(PerkHash.Crave, TargetedDamagePerk);
             RegisterPerkProcessor(PerkHash.NanoFeast, TargetedDamagePerk);
             RegisterPerkProcessor(PerkHash.BotConfinement, TargetedDamagePerk);
-
             RegisterPerkProcessor(PerkHash.ForceOpponent, TargetedDamagePerk);
             RegisterPerkProcessor(PerkHash.Purify, TargetedDamagePerk);
             RegisterPerkProcessor(PerkHash.Bluntness, TargetedDamagePerk);
@@ -68,6 +67,10 @@ namespace CombatHandler.Generic
             RegisterPerkProcessor(PerkHash.WitOfTheAtrox, TargetedDamagePerk, CombatActionPriority.High);
             RegisterPerkProcessor(PerkHash.EvasiveStance, SelfDefPerk, CombatActionPriority.Medium);
             RegisterPerkProcessor(PerkHash.DodgeTheBlame, SelfDefPerk, CombatActionPriority.High);
+            RegisterPerkProcessor(PerkHash.DazzleWithLights, StarfallPerk);
+            RegisterPerkProcessor(PerkHash.Combust, TargetedDamagePerk);
+            RegisterPerkProcessor(PerkHash.ThermalDetonation, TargetedDamagePerk);
+            RegisterPerkProcessor(PerkHash.Supernova, TargetedDamagePerk);
 
 
 
@@ -772,7 +775,7 @@ namespace CombatHandler.Generic
                     maxNCU += missingNCU + baseNCU;
                     int remainingNCU = maxNCU - currentNCU;
 
-                    Chat.WriteLine(teamMemberWithoutBuff.Name + " is missing " + spell.Name);
+                  //  Chat.WriteLine(teamMemberWithoutBuff.Name + " is missing " + spell.Name);
                     //if (remainingNCU > Math.Abs(spell.NCU))
                     //{
                     actionTarget.Target = teamMemberWithoutBuff;
