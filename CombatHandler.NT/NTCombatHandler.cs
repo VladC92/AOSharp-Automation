@@ -1,5 +1,6 @@
 ﻿using AOSharp.Common.GameData;
 using AOSharp.Core;
+using AOSharp.Core.UI;
 using AOSharp.Core.UI.Options;
 using CombatHandler.Generic;
 using System;
@@ -72,7 +73,8 @@ namespace Desu
 
             RegisterSpellProcessor(RelevantNanos.NanobotShelter, GenericBuff);
             RegisterSpellProcessor(RelevantNanos.NanoBuffs, GenericBuff);
-            // RegisterSpellProcessor(RelevantNanos.NotumOverload, GenericBuff);
+            RegisterSpellProcessor(RelevantNanos.NotumOverload, GenericBuff);
+            RegisterSpellProcessor(RelevantNanos.NotumOverload, TeamBuffs);
             RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.Psy_IntBuff).OrderByStackingOrder(), GenericBuff);
             RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.Psy_IntBuff).OrderByStackingOrder(), GenericBuff);
             RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.NanoOverTime_LineA).OrderByStackingOrder(), GenericBuff);
@@ -131,6 +133,42 @@ namespace Desu
 
             return true;
         }
+        public bool TeamBuffs(Spell spell, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
+        {
+            if (DynelManager.LocalPlayer.MovementState == MovementState.Sit)
+                return false;
+
+            if (DynelManager.LocalPlayer.IsInTeam())
+            {
+                SimpleChar teamMemberWithoutBuff = DynelManager.Characters
+                    .Where(c => Team.Members.Select(t => t.Identity.Instance).Contains(c.Identity.Instance))
+                    .Where(c => !HasBuff(spell, c))
+                    .FirstOrDefault();
+                if (teamMemberWithoutBuff != null && teamMemberWithoutBuff.Profession == Profession.NanoTechnician)
+                {
+                    int currentNCU = teamMemberWithoutBuff.GetStat(Stat.CurrentNCU);
+                    int maxNCU = teamMemberWithoutBuff.GetStat(Stat.MaxNCU);
+
+                    // MaxNCU is bugged, for a 12 NCU it gives -459 NCU, we need to adapt to calc exact NCU
+
+                    int missingNCU = 459 + 255;
+
+                    int baseNCU = 12;
+
+                    maxNCU += missingNCU + baseNCU;
+                    int remainingNCU = maxNCU - currentNCU;
+
+                    Chat.WriteLine(teamMemberWithoutBuff.Name + " is missing " + spell.Name);
+                    //if (remainingNCU > Math.Abs(spell.NCU))
+                    //{
+                    actionTarget.Target = teamMemberWithoutBuff;
+                    return true;
+                    //}
+                }
+            }
+
+            return false;
+        }
 
         private bool AiDotNuke(Spell spell, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
         {
@@ -181,6 +219,8 @@ namespace Desu
             public const int MildToxicSpill = 45894;
             public const int CircleOfWinter = 28599;
             public const int CircleScythe = 45937;
+            public const int NotumOverload = 95443;
+           
 
 
 

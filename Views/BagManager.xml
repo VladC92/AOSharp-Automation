@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" standalone="yes"?>
+<root>
+	<View>
+		<TextView name="infoLabel" value="" layout_borders="Rect(5,5,5,0)" />
+		<TextView name="selectedValue" value="" layout_borders="Rect(5,5,5,0)" />
+		<TextView name="selectionLabel" value="" layout_borders="Rect(5,5,5,0)" />
+		<OptionCheckBox name="neckSlotCheckbox" label="Neck" opt_category="ZamTools" opt_type="variant" opt_variable="ZamTools__Neck"/>
+		<OptionCheckBox name="hud3SlotCheckbox" label="Hud3" opt_category="ZamTools" opt_type="variant" opt_variable="ZamTools__Hud3"/>
+		<OptionCheckBox name="leftFingerSlotCheckbox" label="Left Finger" opt_category="ZamTools" opt_type="variant" opt_variable="ZamTools__LeftFinger"/>
+		<Button label="ResetBags" name="resetBagsButton" opt_category="ZamTools" layout_borders="Rect(10,10,10,0)"/>
+		<Button label="SetBag" name="setStackBagButton" opt_category="ZamTools" layout_borders="Rect(10,10,10,0)"/>
+		<Button label="Stack" name="stackButton" layout_borders="Rect(10,10,10,0)"/>
+		<Button label="Force Bag" name="forceBagButton" layout_borders="Rect(10,10,10,0)"/>
+	</View>
+</root>

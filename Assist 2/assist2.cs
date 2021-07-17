@@ -407,6 +407,7 @@ namespace Desu
 
         private void DrawPlayer(SimpleChar player)
         {
+            int time = (int)Time.NormalTime;
             try
             {
                 if (player != null)
@@ -414,6 +415,8 @@ namespace Desu
 
                     Debug.DrawSphere(player.Position, 1, DebuggingColor.LightBlue);
                     Debug.DrawLine(DynelManager.LocalPlayer.Position, player.Position, DebuggingColor.LightBlue);
+
+
 
 
                     if (player.FightingTarget != null)
@@ -474,56 +477,65 @@ namespace Desu
             foreach (SimpleChar player in DynelManager.Players)
             {
 
-                bool isKeyProf = false;
+                 bool isKeyProf = false;
 
                 switch (player.Profession)
                 {
 
                     case Profession.Doctor:
-                        isKeyProf = true;
+                         isKeyProf = true;
                         break;
 
                     case Profession.Trader:
 
-                        isKeyProf = true;
+                         isKeyProf = true;
                         break;
 
                     case Profession.Engineer:
-                        isKeyProf = true;
+                         isKeyProf = true;
                         break;
 
                     case Profession.NanoTechnician:
 
-                        isKeyProf = true;
+                          isKeyProf = true;
                         break;
                     case Profession.MartialArtist:
 
-                        isKeyProf = true;
+                         isKeyProf = true;
                         break;
                     case Profession.Agent:
 
-                        isKeyProf = true;
+                         isKeyProf = true;
                         break;
                     case 0:
 
                         break;
 
+
                 }
-                if (isKeyProf && player.Side == Side.OmniTek && player.Level > 218 ) //|| isKeyProf && player.Side == Side.OmniTek && player.Level == 150 || isKeyProf && player.Side == Side.OmniTek && player.Level == 158 || isKeyProf && player.Side == Side.OmniTek && player.Level == 170 || isKeyProf && player.Side == Side.OmniTek && player.Level == 118)
+                if (isKeyProf && player.Side == Side.OmniTek && player.Level > 218) //|| isKeyProf && player.Side == Side.OmniTek && player.Level == 150 || isKeyProf && player.Side == Side.OmniTek && player.Level == 158 || isKeyProf && player.Side == Side.OmniTek && player.Level == 170 || isKeyProf && player.Side == Side.OmniTek && player.Level == 118)
                 {
                     Debug.DrawSphere(player.Position, 1, ProfessionCollors[player.Profession]);
                     Debug.DrawLine(DynelManager.LocalPlayer.Position, player.Position, ProfessionCollors[player.Profession]);
 
 
                 }
+                else
+                {
+                    continue;
+                }
+
 
             }
+
 
         }
 
 
         private void OnUpdate(object sender, float e)
         {
+            _ = (int)Time.NormalTime;
+
             PvpKeyProfs();
             DrawFoundPlayers();
 
@@ -547,6 +559,8 @@ namespace Desu
                 AssistAttack(player);
 
             }
+         
+
             else
             {
                 player = null;

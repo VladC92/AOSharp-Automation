@@ -38,7 +38,7 @@ namespace CombatHandler.Generic
         {
             Game.OnUpdate += OnUpdate;
             Game.TeleportEnded += TeleportEnded;
-           
+
             Network.N3MessageReceived += Network_N3MessageReceived;
             DynelManager.DynelSpawned += DynelSpawned;
 
@@ -195,207 +195,248 @@ namespace CombatHandler.Generic
                 Chat.WriteLine(e.Message);
             }
         }
-   
+
         private void StackCommand(string command, string[] param, ChatWindow chatWindow)
+        {
+            try
             {
-                try
+                if (param.Length == 0)
                 {
-                    if (param.Length == 0)
+                    Chat.WriteLine("Dupe bags exploit enabled", ChatColor.Green);
+                    List<Container> backpacks = Inventory.Backpacks;
+                    foreach (Container backpack in backpacks)
                     {
-                        Chat.WriteLine("Dupe bags exploit enabled", ChatColor.Green);
-                        List<Container> backpacks = Inventory.Backpacks;
-                        foreach (Container backpack in backpacks)
+                        Chat.WriteLine($"Searching for bags....");
+                        if (backpack.Slot.Instance == (int)EquipSlot.Social_Back)
                         {
-                            Chat.WriteLine($"Searching for bags....");
-                            if (backpack.Slot.Instance == (int)EquipSlot.Social_Back)
-                            {
-                                Chat.WriteLine($"   Inner Bag - {backpack.Identity} - IsOpen:{backpack.IsOpen}{((backpack.IsOpen) ? $" - Items:{backpack.Items.Count}" : "")}");
-                                innerBag = backpack;
-                                innerBagFound = true;
-                            }
-
-
-
-                            if (innerBagFound && outerBagFound)
-                            {
-                                Chat.WriteLine($"", ChatColor.Green);
-                                Chat.WriteLine($"====================================================", ChatColor.Green);
-                                Chat.WriteLine($"   Succes!!", ChatColor.Green);
-                                Chat.WriteLine($"", ChatColor.Green);
-                                Chat.WriteLine($"   Forcing {innerBag.Identity} into {outerBag.Identity}", ChatColor.Green);
-                                Chat.WriteLine($"====================================================", ChatColor.Green);
-                                Identity bank = new Identity();
-                                bank.Instance = (int)EquipSlot.Social_Back;
-                                bank.Type = IdentityType.BankByRef;
-
-                                Network.Send(new ClientContainerAddItem()
-                                {
-                                    Target = outerBag.Identity,
-                                    Source = bank
-                                });
-                                return;
-                            }
-
-                            Chat.WriteLine($"", ChatColor.Red);
-                            Chat.WriteLine($"====================================================", ChatColor.Red);
-                            Chat.WriteLine($"   FAILED!", ChatColor.Red);
-                            Chat.WriteLine($"====================================================", ChatColor.Red);
-                            Chat.WriteLine($"You must have a container on your social back slot!", ChatColor.Red);
-                            Chat.WriteLine($"You must remove everything from bank and occupy the first 40 slots with med packs (Before putting anything back inside!)!", ChatColor.Red);
-                            Chat.WriteLine($"You must have a bank terminal open!", ChatColor.Red);
-                            Chat.WriteLine($"You must have SINGLE a bag open in your inventory!", ChatColor.Red);
-
-
-
+                            Chat.WriteLine($"   Inner Bag - {backpack.Identity} - IsOpen:{backpack.IsOpen}{((backpack.IsOpen) ? $" - Items:{backpack.Items.Count}" : "")}");
+                            innerBag = backpack;
+                            innerBagFound = true;
                         }
-                        foreach (Container backpack in backpacks)
+
+
+
+                        if (innerBagFound && outerBagFound)
                         {
-                            if (backpack.Slot.Instance != (int)EquipSlot.Social_Back && backpack.IsOpen)
+                            Chat.WriteLine($"", ChatColor.Green);
+                            Chat.WriteLine($"====================================================", ChatColor.Green);
+                            Chat.WriteLine($"   Succes!!", ChatColor.Green);
+                            Chat.WriteLine($"", ChatColor.Green);
+                            Chat.WriteLine($"   Forcing {innerBag.Identity} into {outerBag.Identity}", ChatColor.Green);
+                            Chat.WriteLine($"====================================================", ChatColor.Green);
+                            Identity bank = new Identity();
+                            bank.Instance = (int)EquipSlot.Social_Back;
+                            bank.Type = IdentityType.BankByRef;
+
+                            Network.Send(new ClientContainerAddItem()
                             {
-                                //   Chat.WriteLine($"   Outer Bag - {backpack.Identity} - IsOpen:{backpack.IsOpen}{((backpack.IsOpen) ? $" - Items:{backpack.Items.Count}" : "")}");
-                                outerBag = backpack;
-                                outerBagFound = true;
-                            }
+                                Target = outerBag.Identity,
+                                Source = bank
+                            });
+                            return;
+                        }
+
+                        Chat.WriteLine($"", ChatColor.Red);
+                        Chat.WriteLine($"====================================================", ChatColor.Red);
+                        Chat.WriteLine($"   FAILED!", ChatColor.Red);
+                        Chat.WriteLine($"====================================================", ChatColor.Red);
+                        Chat.WriteLine($"You must have a container on your social back slot!", ChatColor.Red);
+                        Chat.WriteLine($"You must remove everything from bank and occupy the first 40 slots with med packs (Before putting anything back inside!)!", ChatColor.Red);
+                        Chat.WriteLine($"You must have a bank terminal open!", ChatColor.Red);
+                        Chat.WriteLine($"You must have SINGLE a bag open in your inventory!", ChatColor.Red);
+
+
+
+                    }
+                    foreach (Container backpack in backpacks)
+                    {
+                        if (backpack.Slot.Instance != (int)EquipSlot.Social_Back && backpack.IsOpen)
+                        {
+                            //   Chat.WriteLine($"   Outer Bag - {backpack.Identity} - IsOpen:{backpack.IsOpen}{((backpack.IsOpen) ? $" - Items:{backpack.Items.Count}" : "")}");
+                            outerBag = backpack;
+                            outerBagFound = true;
                         }
                     }
                 }
-                catch (Exception e)
-                {
-                    Chat.WriteLine(e.Message);
-                }
+            }
+            catch (Exception e)
+            {
+                Chat.WriteLine(e.Message);
+            }
 
 
-                if (param.Length == 1)
+            if (param.Length == 1)
+            {
+                switch (param[0].ToLower())
                 {
-                    switch (param[0].ToLower())
-                    {
-                        case "bag":
-                        case "bags":
-                            List<Container> backpacks = Inventory.Backpacks;
-                            foreach (Container backpack in backpacks)
+                    case "bag":
+                    case "bags":
+                        List<Container> backpacks = Inventory.Backpacks;
+                        foreach (Container backpack in backpacks)
+                        {
+                            Chat.WriteLine($"{backpack.Slot} - IsOpen:{backpack.IsOpen}{((backpack.IsOpen) ? $" - Items:{backpack.Items.Count}" : "")}");
+                        }
+                        break;
+                    case "test":
+                        try
+                        {
+                            string cc = "Combined Commando's Legwear";
+
+
+                            List<Item> items = Inventory.Items;
+                            //    Chat.WriteLine($"{item.Slot} - {item.LowId} - {item.Name} - {item.QualityLevel} - {item.UniqueIdentity}");
+
+                            foreach (Item item in items)
                             {
-                                Chat.WriteLine($"{backpack.Slot} - IsOpen:{backpack.IsOpen}{((backpack.IsOpen) ? $" - Items:{backpack.Items.Count}" : "")}");
+
+
+                                if (item.Name == "Combined Commando's Gloves"  || item.Name == "Combined Commando's Jacket" || item.Name == "Combined Commando's Sleeves" || item.Name == "Combined Commando's Legs")
+                                {
+
+                                    if (items.Contains(item))
+                                    {
+                                        Chat.WriteLine(" Found  " + item.Name + " " + item.LowId + " ql " + item.QualityLevel);
+                                    }
+                                    else
+                                    {
+                                        Chat.WriteLine("  No items");
+                                        return;
+                                    }
+                                }
                             }
-                            break;
-                        case "logs":
-                        case "log":
-                            stackLog = true;
-                            break;
-                        case "nolog":
-                            stackLog = false;
-                            break;
-                        case "boots":
-                        case "feet":
-                            stackSlot = EquipSlot.Cloth_Feet;
-                            stackEnabled = true;
-                            Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
-                            break;
+                        }
+                        catch (Exception e)
+                        {
+                            Chat.WriteLine(e.Message);
 
-                        default:
+                        }
 
-                        case "hud1":
-                            stackSlot = EquipSlot.Weap_Hud1;
-                            stackEnabled = true;
-                            Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
-                            break;
-                        case "hud2":
-                            stackSlot = EquipSlot.Weap_Hud2;
-                            stackEnabled = true;
-                            Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
-                            break;
-                        case "hud3":
-                            stackEnabled = true;
-                            stackSlot = EquipSlot.Weap_Hud3;
-                            Chat.WriteLine("Stack command enabled for Hud3", ChatColor.Green);
-                            break;
-                        case "neck":
-                            stackSlot = EquipSlot.Cloth_Neck;
-                            stackEnabled = true;
-                            Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
-                            break;
-                        case "chest":
-                        case "body":
-                            stackSlot = EquipSlot.Cloth_Body;
-                            stackEnabled = true;
-                            Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
-                            break;
-                        case "lw":
-                        case "leftwrist":
-                            stackSlot = EquipSlot.Cloth_LeftWrist;
-                            stackEnabled = true;
-                            Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
-                            break;
-                        case "lf":
-                        case "leftfinger":
-                            stackSlot = EquipSlot.Cloth_LeftFinger;
-                            stackEnabled = true;
-                            Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
-                            break;
-                        case "utils3":
-                            stackSlot = EquipSlot.Weap_Utils3;
-                            stackEnabled = true;
-                            Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
-                            break;
+                        break;
+                    case "logs":
+                    case "log":
+                        stackLog = true;
+                        break;
+                    case "nolog":
+                        stackLog = false;
+                        break;
+                    case "boots":
+                    case "feet":
+                        stackSlot = EquipSlot.Cloth_Feet;
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
+                        break;
+
+                    default:
+
+                    case "hud1":
+                        stackSlot = EquipSlot.Weap_Hud1;
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
+                        break;
+                    case "hud2":
+                        stackSlot = EquipSlot.Weap_Hud2;
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
+                        break;
+                    case "head":
+                    case "helm":
+                        stackSlot = EquipSlot.Cloth_Head;
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
+                        break;
+                    case "hud3":
+                        stackEnabled = true;
+                        stackSlot = EquipSlot.Weap_Hud3;
+                        Chat.WriteLine("Stack command enabled for Hud3", ChatColor.Green);
+                        break;
+                    case "neck":
+                        stackSlot = EquipSlot.Cloth_Neck;
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
+                        break;
+                    case "chest":
+                    case "body":
+                        stackSlot = EquipSlot.Cloth_Body;
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
+                        break;
+                    case "lw":
+                    case "leftwrist":
+                        stackSlot = EquipSlot.Cloth_LeftWrist;
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
+                        break;
+                    case "lf":
+                    case "leftfinger":
+                        stackSlot = EquipSlot.Cloth_LeftFinger;
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
+                        break;
+                    case "utils3":
+                        stackSlot = EquipSlot.Weap_Utils3;
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
+                        break;
                     case "utils2":
                         stackSlot = EquipSlot.Weap_Utils2;
                         stackEnabled = true;
                         Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
                         break;
                     case "la":
-                        case "leftarm":
-                            stackSlot = EquipSlot.Cloth_LeftArm;
-                            stackEnabled = true;
-                            Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
-                            break;
-                        case "ra":
-                        case "rightarm":
-                            stackSlot = EquipSlot.Cloth_LeftArm;
-                            stackEnabled = true;
-                            Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
-                            break;
+                    case "leftarm":
+                        stackSlot = EquipSlot.Cloth_LeftArm;
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
+                        break;
+                    case "ra":
+                    case "rightarm":
+                        stackSlot = EquipSlot.Cloth_LeftArm;
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
+                        break;
 
-                        case "rf":
-                        case "rightfinger":
-                            stackSlot = EquipSlot.Cloth_RightFinger;
-                            stackEnabled = true;
-                            Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
-                            break;
-                        case "all":
-                            stackSlot = EquipSlot.Weap_Hud3;
-                            stackSlot = EquipSlot.Cloth_Neck;
-                            stackall = true;
-                            Chat.WriteLine("Stack enabled for hud3  and neck slots ! ", ChatColor.Green);
-                            break;
+                    case "rf":
+                    case "rightfinger":
+                        stackSlot = EquipSlot.Cloth_RightFinger;
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
+                        break;
+                    case "all":
+                        stackSlot = EquipSlot.Weap_Hud3;
+                        stackSlot = EquipSlot.Cloth_Neck;
+                        stackall = true;
+                        Chat.WriteLine("Stack enabled for hud3  and neck slots ! ", ChatColor.Green);
+                        break;
 
-                        case "rw":
-                        case "rightwrist":
-                            stackSlot = EquipSlot.Cloth_RightWrist;
-                            stackEnabled = true;
-                            Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
-                            break;
-                        case "rs":
-                        case "rightshoulder":
-                            stackSlot = EquipSlot.Cloth_RightShoulder;
-                            stackEnabled = true;
-                            Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
-                            break;
+                    case "rw":
+                    case "rightwrist":
+                        stackSlot = EquipSlot.Cloth_RightWrist;
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
+                        break;
+                    case "rs":
+                    case "rightshoulder":
+                        stackSlot = EquipSlot.Cloth_RightShoulder;
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
+                        break;
 
-                        case "s":
-                        case "stop":
-                        case "off":
-                        case "o":
-                            stackEnabled = false;
-                            Chat.WriteLine("Stack/dupe command disabled", ChatColor.Green);
-                            break;
+                    case "s":
+                    case "stop":
+                    case "off":
+                    case "o":
+                        stackEnabled = false;
+                        Chat.WriteLine("Stack/dupe command disabled", ChatColor.Green);
+                        break;
 
-                    }
-
-
-                    return;
                 }
 
+
+                return;
             }
-        
+
+        }
+
 
         protected bool GenericBuff(Spell spell, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
         {
@@ -508,23 +549,23 @@ namespace CombatHandler.Generic
                 }
             }
         }
-       
+
         private unsafe string GetItemName(int lowId, int highId, int ql)
         {
-       //0     Identity none = Identity.None;
+            //0     Identity none = Identity.None;
             IntPtr pEngine = N3Engine_t.GetInstance();
 
             if (!DummyItem.CreateDummyItemID(lowId, highId, ql, out Identity dummyItemId))
                 throw new Exception($"Failed to create dummy item. LowId: {lowId}\tLowId: {highId}\tLowId: {ql}");
 
-          //  IntPtr pItem = N3EngineClientAnarchy_t.GetItemByTemplate(pEngine, dummyItemId, none);
+            //  IntPtr pItem = N3EngineClientAnarchy_t.GetItemByTemplate(pEngine, dummyItemId, none);
 
-           // if (pItem == IntPtr.Zero)
-                throw new Exception($"DummyItem::DummyItem - Unable to locate item. LowId: {lowId}\tLowId: {highId}\tLowId: {ql}");
+            // if (pItem == IntPtr.Zero)
+            throw new Exception($"DummyItem::DummyItem - Unable to locate item. LowId: {lowId}\tLowId: {highId}\tLowId: {ql}");
 
-           // return Utils.UnsafePointerToString((*(MemStruct*)pItem).Name);
+            // return Utils.UnsafePointerToString((*(MemStruct*)pItem).Name);
         }
-          
+
 
         [StructLayout(LayoutKind.Explicit, Pack = 0)]
         private struct MemStruct
@@ -535,9 +576,9 @@ namespace CombatHandler.Generic
             [FieldOffset(0x9C)]
             public IntPtr Name;
         }
-    
 
-    private void StatStacker()
+
+        private void StatStacker()
         {
             List<Item> characterItems = Inventory.Items;
             Container stackBag = Inventory.Backpacks.FirstOrDefault(x => x.IsOpen);
@@ -1043,7 +1084,7 @@ public enum StackItems
     //new event items
 
     CuirassoftheEight = 304481,
-    PatchworkDefensiveDrone   = 306002 ,
+    PatchworkDefensiveDrone = 306002,
 
 
 
@@ -1122,6 +1163,7 @@ public enum StackItems
     MasterpieceAncientBracer = 267780,
     DustBrigadeBracerThirdEdition = 292564,
     GauntRightShoulder = 291931,
+    OfabAgentHelmet  = 264287,
 
 
     // nova dillon
