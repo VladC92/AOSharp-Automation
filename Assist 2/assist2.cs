@@ -496,13 +496,14 @@ namespace Desu
 
                         Debug.DrawSphere(player.Position, 1, debuggingColor);
                         Debug.DrawLine(DynelManager.LocalPlayer.Position, player.Position, debuggingColor);
+                        break;
                     }
                     else
                     {
 
-
+                        debuggingColor = DebuggingColor.Yellow;
                         Vector3 others = DebuggingColor.Purple;
-
+                    /*
                         switch (player.Profession)
                         {
 
@@ -529,72 +530,59 @@ namespace Desu
 
                                 break;
                             case Profession.Unknown:
-                                others = DebuggingColor.White;
+                        
 
                                 break;
 
                             case Profession.Adventurer:
-                                others = DebuggingColor.White;
+                              
 
                                 break;
 
                             case Profession.Shade:
-                                others = DebuggingColor.White;
+                          
 
                                 break;
 
                             case Profession.Enforcer:
-                                others = DebuggingColor.White;
+                             
 
                                 break;
 
                             case Profession.Fixer:
-                                others = DebuggingColor.White;
+                               
 
                                 break;
 
                             case Profession.Bureaucrat:
-                                others = DebuggingColor.White;
+                            
 
                                 break;
 
                             case Profession.Keeper:
-                                others = DebuggingColor.White;
+                               
+
 
                                 break;
-                        }
+                    }
+                    */
+                        
 
                         switch (player.Side)
                         {
 
                             case Side.OmniTek:
 
-                                     // if this guys are different from the key profs above , we just draw a circle to notice them.
+                                     // we draw lines on all omni character that are higher than lvl 218
 
-                                if (player.Level > 218 && player.Profession == Profession.Fixer
-                             || player.Level > 218 && player.Profession == Profession.Shade || player.Level > 218 && player.Profession == Profession.Metaphysicist
-                             || player.Level > 218 && player.Profession == Profession.Enforcer || player.Level > 218 && player.Profession == Profession.Soldier
-                             || player.Level > 218 && player.Profession == Profession.Bureaucrat || player.Level > 218 && player.Profession == Profession.Adventurer
-                             || player.Level > 218 && player.Profession == Profession.Keeper || player.Level > 218 && player.Profession == Profession.Unknown)
+                                if (player.Level > 218)
                                 {
-                                    Debug.DrawSphere(player.Position, 1, others);
+                                    Debug.DrawSphere(player.Position, 1, debuggingColor);
+                                    Debug.DrawLine(DynelManager.LocalPlayer.Position, player.Position, debuggingColor);
                                     break;
 
                                 }
-                                    // we draw lines and spheres on all the key profs , still not working as it is supposed to work .. but fuck it , it's better than nothing!
-
-                                else if (player.Level > 218 && player.Profession == Profession.Doctor
-                                    || player.Level > 218 && player.Profession == Profession.Trader
-                                    || player.Level > 218 && player.Profession == Profession.Engineer
-                                    || player.Level > 218 && player.Profession == Profession.MartialArtist
-                                    || player.Level > 218 && player.Profession == Profession.NanoTechnician
-                                    || player.Level > 218 && player.Profession == Profession.Agent)
-
-                                {
-                                    Debug.DrawSphere(player.Position, 1, ProfessionCollors[(player.Profession)]);
-                                    Debug.DrawLine(DynelManager.LocalPlayer.Position, player.Position, ProfessionCollors[player.Profession]);
-
-                                }
+                                 
                                 break;
                         }
                     }
