@@ -369,7 +369,7 @@ namespace Desu
                             Chat.WriteLine($"NOOB CALLER detected! {player.Name} is targeting a pet, choose another target.", ChatColor.Red);
 
                             //   currentlyAttacking = "";
-                            return;
+                            continue;
                         }
                         else
                         {
@@ -382,15 +382,14 @@ namespace Desu
                                     SpecialAttack.AimedShot.UseOn(player.FightingTarget.Identity);
                                     SpecialAttack.SneakAttack.UseOn(player.FightingTarget.Identity);
 
-
-
                                 }
 
                             }
 
                         }
 
-                        Chat.WriteLine($"{player.Name} is targeting " + player.FightingTarget.Name + "\n" +
+                        Chat.WriteLine($"{player.Name} is targeting " +
+                            "\n " + player.FightingTarget.Name + "\n" +
                       $" Breed {player.FightingTarget.Breed} \n" +
                         $" Health {player.FightingTarget.MaxHealth}", ChatColor.Green);
 
@@ -407,7 +406,7 @@ namespace Desu
 
         private void DrawPlayer(SimpleChar player)
         {
-            int time = (int)Time.NormalTime;
+            _ = (int)Time.NormalTime;
             try
             {
                 if (player != null)
@@ -472,64 +471,146 @@ namespace Desu
         }
         private void PvpKeyProfs()
         {
-            _ = (int)Time.NormalTime;
+            int time = (int)Time.NormalTime;
 
             foreach (SimpleChar player in DynelManager.Players)
             {
+                if (player.Identity == DynelManager.LocalPlayer.Identity)
+                    continue;
 
-                 bool isKeyProf = false;
+                Vector3 debuggingColor;
 
-                switch (player.Profession)
+                if (Playfield.IsBattleStation)
                 {
+                    debuggingColor = DynelManager.LocalPlayer.GetStat(Stat.BattlestationSide) != player.GetStat(Stat.BattlestationSide) ? DebuggingColor.Red : DebuggingColor.Green;
 
-                    case Profession.Doctor:
-                         isKeyProf = true;
-                        break;
-
-                    case Profession.Trader:
-
-                         isKeyProf = true;
-                        break;
-
-                    case Profession.Engineer:
-                         isKeyProf = true;
-                        break;
-
-                    case Profession.NanoTechnician:
-
-                          isKeyProf = true;
-                        break;
-                    case Profession.MartialArtist:
-
-                         isKeyProf = true;
-                        break;
-                    case Profession.Agent:
-
-                         isKeyProf = true;
-                        break;
-                    case 0:
-
-                        break;
-
-
-                }
-                if (isKeyProf && player.Side == Side.OmniTek && player.Level > 218) //|| isKeyProf && player.Side == Side.OmniTek && player.Level == 150 || isKeyProf && player.Side == Side.OmniTek && player.Level == 158 || isKeyProf && player.Side == Side.OmniTek && player.Level == 170 || isKeyProf && player.Side == Side.OmniTek && player.Level == 118)
-                {
-                    Debug.DrawSphere(player.Position, 1, ProfessionCollors[player.Profession]);
-                    Debug.DrawLine(DynelManager.LocalPlayer.Position, player.Position, ProfessionCollors[player.Profession]);
-
-
+                    Debug.DrawSphere(player.Position, 1, debuggingColor);
+                    Debug.DrawLine(DynelManager.LocalPlayer.Position, player.Position, debuggingColor);
                 }
                 else
                 {
-                    continue;
+                    if (player.Buffs.Contains(new[] { 216382, 284620, 202732, 214879 }) && time % 2 == 0 && player.Side == Side.OmniTek && player.Level > 218)
+                    {
+
+                        debuggingColor = DebuggingColor.Red;
+
+                        Debug.DrawSphere(player.Position, 1, debuggingColor);
+                        Debug.DrawLine(DynelManager.LocalPlayer.Position, player.Position, debuggingColor);
+                    }
+                    else
+                    {
+
+
+                        Vector3 others = DebuggingColor.Purple;
+
+                        switch (player.Profession)
+                        {
+
+                            case Profession.Doctor:
+
+                                break;
+
+                            case Profession.Trader:
+
+                                break;
+
+                            case Profession.Engineer:
+
+                                break;
+
+                            case Profession.NanoTechnician:
+
+                                break;
+
+                            case Profession.MartialArtist:
+
+                                break;
+                            case Profession.Agent:
+
+                                break;
+                            case Profession.Unknown:
+                                others = DebuggingColor.White;
+
+                                break;
+
+                            case Profession.Adventurer:
+                                others = DebuggingColor.White;
+
+                                break;
+
+                            case Profession.Shade:
+                                others = DebuggingColor.White;
+
+                                break;
+
+                            case Profession.Enforcer:
+                                others = DebuggingColor.White;
+
+                                break;
+
+                            case Profession.Fixer:
+                                others = DebuggingColor.White;
+
+                                break;
+
+                            case Profession.Bureaucrat:
+                                others = DebuggingColor.White;
+
+                                break;
+
+                            case Profession.Keeper:
+                                others = DebuggingColor.White;
+
+                                break;
+                        }
+
+                        switch (player.Side)
+                        {
+
+                            case Side.OmniTek:
+
+                                     // if this guys are different from the key profs above , we just draw a circle to notice them.
+
+                                if (player.Level > 218 && player.Profession == Profession.Fixer
+                             || player.Level > 218 && player.Profession == Profession.Shade || player.Level > 218 && player.Profession == Profession.Metaphysicist
+                             || player.Level > 218 && player.Profession == Profession.Enforcer || player.Level > 218 && player.Profession == Profession.Soldier
+                             || player.Level > 218 && player.Profession == Profession.Bureaucrat || player.Level > 218 && player.Profession == Profession.Adventurer
+                             || player.Level > 218 && player.Profession == Profession.Keeper || player.Level > 218 && player.Profession == Profession.Unknown)
+                                {
+                                    Debug.DrawSphere(player.Position, 1, others);
+                                    break;
+
+                                }
+                                    // we draw lines and spheres on all the key profs , still not working as it is supposed to work .. but fuck it , it's better than nothing!
+
+                                else if (player.Level > 218 && player.Profession == Profession.Doctor
+                                    || player.Level > 218 && player.Profession == Profession.Trader
+                                    || player.Level > 218 && player.Profession == Profession.Engineer
+                                    || player.Level > 218 && player.Profession == Profession.MartialArtist
+                                    || player.Level > 218 && player.Profession == Profession.NanoTechnician
+                                    || player.Level > 218 && player.Profession == Profession.Agent)
+
+                                {
+                                    Debug.DrawSphere(player.Position, 1, ProfessionCollors[(player.Profession)]);
+                                    Debug.DrawLine(DynelManager.LocalPlayer.Position, player.Position, ProfessionCollors[player.Profession]);
+
+                                }
+                                break;
+                        }
+                    }
                 }
-
-
             }
-
-
         }
+
+        private void DrawBots()
+        {
+            foreach (SimpleChar player in DynelManager.Players.Where(p => p.GetStat(Stat.InPlay) == 0))
+            {
+                Debug.DrawSphere(player.Position, 1, DebuggingColor.Blue);
+                Debug.DrawLine(DynelManager.LocalPlayer.Position, player.Position, DebuggingColor.Blue);
+            }
+        }
+
 
 
         private void OnUpdate(object sender, float e)
@@ -538,6 +619,7 @@ namespace Desu
 
             PvpKeyProfs();
             DrawFoundPlayers();
+            DrawBots();
 
 
             if (player == null)
@@ -559,7 +641,7 @@ namespace Desu
                 AssistAttack(player);
 
             }
-         
+
 
             else
             {
