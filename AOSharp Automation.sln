@@ -41,6 +41,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utils", "Utils\Utils.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "assist2", "Assist 2\assist2.csproj", "{9C2960B3-4748-4A04-B3DF-3612708DA6B4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TL5", "CombatHandler.AgentTL5\TL5.csproj", "{B073CC9C-962A-4226-B520-1999885C8C27}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -123,6 +125,10 @@ Global
 		{9C2960B3-4748-4A04-B3DF-3612708DA6B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9C2960B3-4748-4A04-B3DF-3612708DA6B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9C2960B3-4748-4A04-B3DF-3612708DA6B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B073CC9C-962A-4226-B520-1999885C8C27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B073CC9C-962A-4226-B520-1999885C8C27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B073CC9C-962A-4226-B520-1999885C8C27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B073CC9C-962A-4226-B520-1999885C8C27}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

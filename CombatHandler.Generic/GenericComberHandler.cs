@@ -1167,6 +1167,9 @@ public enum StackItems
     DustBrigadeBracerThirdEdition = 292564,
     GauntRightShoulder = 291931,
     OfabAgentHelmet  = 264287,
+    PlatinumFiligreeRingsetwithaPerfectlyCutStarRuby = 244282,
+    PlatinumFiligreeRingsetwithaPerfectlyCutStarRuby250 = 244288,
+
 
 
     // nova dillon

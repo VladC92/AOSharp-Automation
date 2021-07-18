@@ -24,7 +24,7 @@ namespace Desu
 
             //LE Procs
             RegisterPerkProcessor(PerkHash.LEProcMetaPhysicistAnticipatedEvasion, LEProc);
-            RegisterPerkProcessor(PerkHash.LEProcMetaPhysicistEgoStrike, LEProc);
+          //  RegisterPerkProcessor(PerkHash.LEProcMetaPhysicistEgoStrike, LEProc);
 
 
             // Perks
@@ -241,18 +241,6 @@ namespace Desu
             return ToggledDebuffTarget("UseNukes", spell, fightingTarget, NanoLine.MetaphysicistMindDamageNanoDebuffs, ref actionTarget);
         }
 
-
-
-
-
-        private bool HasAnyMPNanoLineBuff(SimpleChar target)
-        {
-            return target.Buffs.Contains(NanoLine.MatMetBuff) || target.Buffs.Contains(NanoLine.BioMetBuff)
-                || target.Buffs.Contains(NanoLine.PsyModBuff) || target.Buffs.Contains(NanoLine.SenseImpBuff)
-                || target.Buffs.Contains(NanoLine.MatCreaBuff) || target.Buffs.Contains(NanoLine.MatLocBuff);
-        }
-
-
         private bool SingleTargetNuke(Spell spell, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
         {
             if (fightingTarget == null)
@@ -402,23 +390,6 @@ namespace Desu
             return null;
         }
 
-
-        private void AssignTargetToHealPet()
-        {
-            if (Time.NormalTime - _lastSwitchedHealTime > 5)
-            {
-                SimpleChar dyingTarget = GetTargetToHeal();
-                if (dyingTarget != null)
-                {
-                    Pet healPet = DynelManager.LocalPlayer.Pets.Where(pet => pet.Type == PetType.Heal).FirstOrDefault();
-                    if (healPet != null)
-                    {
-                        healPet.Heal(dyingTarget.Identity);
-                        _lastSwitchedHealTime = Time.NormalTime;
-                    }
-                }
-            }
-        }
         protected static void CancelBuffs(int[] buffsToCancel)
         {
             foreach (Buff buff in DynelManager.LocalPlayer.Buffs)

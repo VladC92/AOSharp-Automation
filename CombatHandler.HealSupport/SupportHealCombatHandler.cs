@@ -24,7 +24,7 @@ namespace Desu
 
 
             _menu = new Menu("CombatHandler.SUpportHeal", "CombatHandler.SupportHeal");
-            _menu.AddItem(new MenuBool("UseUBT", "UBT Debuffing", true));
+            _menu.AddItem(new MenuBool("UseUBT", "UBT Debuffing", false));
             OptionPanel.AddMenu(_menu);
         }
         private bool Ubt(Spell spell, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
