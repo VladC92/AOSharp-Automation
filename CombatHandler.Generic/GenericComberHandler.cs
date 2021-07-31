@@ -11,6 +11,7 @@ using AOSharp.Core.IPC;
 using AOSharp.Core.UI;
 using SmokeLounge.AOtomation.Messaging.Messages;
 using SmokeLounge.AOtomation.Messaging.Messages.N3Messages;
+using static AOSharp.Core.Inventory.Inventory;
 
 namespace CombatHandler.Generic
 {
@@ -27,6 +28,7 @@ namespace CombatHandler.Generic
         private bool stackLog = false;
         public Container innerBag;
         public Container outerBag;
+        N3Message n3Msg;
 
         public int EvadeCycleTimeoutSeconds = 180;
         private Dictionary<PerkLine, int> _perkLineLevels;
@@ -129,7 +131,6 @@ namespace CombatHandler.Generic
 
         }
 
-
         private void DupeCommand(string command, string[] param, ChatWindow chatWindow)
         {
             try
@@ -138,6 +139,9 @@ namespace CombatHandler.Generic
                 {
                     Chat.WriteLine("Dupe bags exploit enabled", ChatColor.Green);
                     List<Container> backpacks = Inventory.Backpacks;
+
+
+
                     foreach (Container backpack in backpacks)
                     {
                         Chat.WriteLine($"Searching for bags....");
@@ -268,6 +272,8 @@ namespace CombatHandler.Generic
             }
 
 
+
+
             if (param.Length == 1)
             {
                 switch (param[0].ToLower())
@@ -283,9 +289,7 @@ namespace CombatHandler.Generic
                     case "test":
                         try
                         {
-                            string cc = "Combined Commando's Legwear";
-
-
+                           
                             List<Item> items = Inventory.Items;
                             //    Chat.WriteLine($"{item.Slot} - {item.LowId} - {item.Name} - {item.QualityLevel} - {item.UniqueIdentity}");
 
@@ -293,7 +297,7 @@ namespace CombatHandler.Generic
                             {
 
 
-                                if (item.Name == "Combined Commando's Gloves"  || item.Name == "Combined Commando's Jacket" || item.Name == "Combined Commando's Sleeves" || item.Name == "Combined Commando's Legs")
+                                if (item.Name == "Combined Commando's Gloves" || item.Name == "Combined Commando's Jacket" || item.Name == "Combined Commando's Sleeves" || item.Name == "Combined Commando's Legs")
                                 {
 
                                     if (items.Contains(item))
@@ -530,12 +534,15 @@ namespace CombatHandler.Generic
                     if (!_observedEquips.ContainsKey(character.Identity.Instance))
                         _observedEquips.Add(character.Identity.Instance, new List<EquipSlot>());
 
+
                     EquipSlot equipSlot = (EquipSlot)templateAction.Placement.Instance;
 
                     if (templateAction.Unknown2 == 7)
                     {
                         if (_observedEquips[character.Identity.Instance].Contains(equipSlot))
                             _observedEquips[character.Identity.Instance].Remove(equipSlot);
+                        // Chat.WriteLine($"Player : {character.Name} is stacking : \t { templateAction.ToString()}  on slot  \t {equipSlot }");
+                        //   Chat.WriteLine($"Player : {character.Name} is stacking : \t { _observedEquips }  on slot  \t {equipSlot }");
                     }
                     else if (templateAction.Unknown2 == 6)
                     {
@@ -543,15 +550,31 @@ namespace CombatHandler.Generic
                         {
                             if (!_observedStacks.TryGetValue(character.Name, out _))
                                 _observedStacks.Add(character.Name, GetItemName(templateAction.ItemLowId, templateAction.ItemHighId, templateAction.Quality));
+                            //   Chat.WriteLine($"Player : {character.Name} is stacking : \t { _observedStacks }  on slot  \t {equipSlot }");
+                            //  Chat.WriteLine($"Player : {character.Name} is stacking : \t { _observedEquips }  on slot  \t {equipSlot }");
                         }
                         else
                         {
                             _observedEquips[character.Identity.Instance].Add(equipSlot);
+                            //  Chat.WriteLine($"Player : {character.Name} is stacking : \t { _observedStacks }  on slot  \t {equipSlot }");
+                            //   Chat.WriteLine($"Player : {character.Name} is stacking : \t { _observedEquips }  on slot  \t {equipSlot }");
                         }
                     }
                 }
             }
+            TemplateActionMessage ayy = (TemplateActionMessage)n3Msg;
+            Dynel player = DynelManager.GetDynel(ayy.Identity);
+            TempItem tempItem = new TempItem(ayy.ItemLowId, ayy.ItemHighId, ayy.Quality);
+
+            if (ayy.Placement.Type == IdentityType.SimpleChar)
+            {
+                _ = DynelManager.GetDynel(ayy.Identity);
+
+                Chat.WriteLine($"Player: {player.Name } is Stacking :\t{tempItem.Name} !!!", ChatColor.Green);
+                Chat.WriteLine($"Player 's : {player.Name } stats are now  :\t{tempItem.GetStat((Stat)tempItem.LowId)} !!!", ChatColor.Green);
+            }
         }
+
 
         private unsafe string GetItemName(int lowId, int highId, int ql)
         {
@@ -775,7 +798,7 @@ namespace CombatHandler.Generic
                     maxNCU += missingNCU + baseNCU;
                     int remainingNCU = maxNCU - currentNCU;
 
-                  //  Chat.WriteLine(teamMemberWithoutBuff.Name + " is missing " + spell.Name);
+                    //  Chat.WriteLine(teamMemberWithoutBuff.Name + " is missing " + spell.Name);
                     //if (remainingNCU > Math.Abs(spell.NCU))
                     //{
                     actionTarget.Target = teamMemberWithoutBuff;
@@ -913,7 +936,7 @@ namespace CombatHandler.Generic
             if (fightingTarget == null)
                 return false;
 
-            if (fightingTarget.Health > 50000)
+            if (fightingTarget.Health > 20000)
                 return true;
 
             if (fightingTarget.HealthPercent < 5)
@@ -957,8 +980,11 @@ namespace CombatHandler.Generic
             if (!DynelManager.LocalPlayer.Buffs.Contains(NanoLine.FoodandDrinkBuffs))
                 return DamageItem(item, fightingTarget, ref actionTarget);
 
-            return false;
+            return true;
+
         }
+         
+        
 
         private bool Limber(PerkAction perkaction, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
         {
@@ -1166,7 +1192,7 @@ public enum StackItems
     MasterpieceAncientBracer = 267780,
     DustBrigadeBracerThirdEdition = 292564,
     GauntRightShoulder = 291931,
-    OfabAgentHelmet  = 264287,
+    OfabAgentHelmet = 264287,
     PlatinumFiligreeRingsetwithaPerfectlyCutStarRuby = 244282,
     PlatinumFiligreeRingsetwithaPerfectlyCutStarRuby250 = 244288,
 

@@ -85,6 +85,12 @@ namespace MultiboxHelper
             IPCChannel.RegisterCallback((int)IPCOpcode.Leet, OnLeetMessage);
 
 
+
+
+
+
+
+
             //_menu = new Menu("MultiboxHelper", "MultiboxHelper");
             //_menu.AddItem(new MenuBool("SyncMove", "Sync Movement", true));
             //_menu.AddItem(new MenuBool("SyncAttack", "Sync Attacks", true));
@@ -107,7 +113,7 @@ namespace MultiboxHelper
 
             Game.OnUpdate += OnUpdate;
 
-            Chat.WriteLine("Multibox Helper Loaded! V1.4", AOSharp.Common.GameData.ChatColor.DarkPink);
+            Chat.WriteLine("Multibox Helper Loaded! V1.4", ChatColor.DarkPink);
         }
 
         private void TestCommand(string command, string[] param, ChatWindow chatWindow)
@@ -151,6 +157,7 @@ namespace MultiboxHelper
                 Chat.WriteLine(e.Message);
             }
         }
+      
         private void OnLeetMessage(int sender, IPCMessage msg)
         {
 

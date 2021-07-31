@@ -20,6 +20,7 @@ namespace MultiboxHelper.IPCMessages
         Test,
         Doc,
         Keeper ,
-        Leet
+        Leet    ,
+        Hide
     }
 }

@@ -54,6 +54,7 @@
     <Compile Include="IPCMessages\KeeperMessage.cs" />
     <Compile Include="IPCMessages\FloorMessage.cs" />
     <Compile Include="IPCMessages\LeetMessage.cs" />
+    <Compile Include="IPCMessages\SyncHide.cs" />
     <Compile Include="IPCMessages\TestMessage.cs" />
     <Compile Include="IPCMessages\StopAttackIPCMessage.cs" />
     <Compile Include="IPCMessages\IPCOpcode.cs" />
