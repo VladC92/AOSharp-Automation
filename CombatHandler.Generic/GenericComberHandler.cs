@@ -41,7 +41,7 @@ namespace CombatHandler.Generic
             Game.OnUpdate += OnUpdate;
             Game.TeleportEnded += TeleportEnded;
 
-            Network.N3MessageReceived += Network_N3MessageReceived;
+            
             DynelManager.DynelSpawned += DynelSpawned;
 
             _perkLineLevels = Perk.GetPerkLineLevels(true);
@@ -289,7 +289,7 @@ namespace CombatHandler.Generic
                     case "test":
                         try
                         {
-                           
+
                             List<Item> items = Inventory.Items;
                             //    Chat.WriteLine($"{item.Slot} - {item.LowId} - {item.Name} - {item.QualityLevel} - {item.UniqueIdentity}");
 
@@ -520,89 +520,6 @@ namespace CombatHandler.Generic
                     _observedEquips[dynel.Identity.Instance] = new List<EquipSlot>();
             }
         }
-
-
-
-        private void Network_N3MessageReceived(object s, N3Message n3Msg)
-        {
-            if (n3Msg.N3MessageType == N3MessageType.TemplateAction)
-            {
-                TemplateActionMessage templateAction = n3Msg as TemplateActionMessage;
-
-                if (DynelManager.Find(templateAction.Identity, out SimpleChar character))
-                {
-                    if (!_observedEquips.ContainsKey(character.Identity.Instance))
-                        _observedEquips.Add(character.Identity.Instance, new List<EquipSlot>());
-
-
-                    EquipSlot equipSlot = (EquipSlot)templateAction.Placement.Instance;
-
-                    if (templateAction.Unknown2 == 7)
-                    {
-                        if (_observedEquips[character.Identity.Instance].Contains(equipSlot))
-                            _observedEquips[character.Identity.Instance].Remove(equipSlot);
-                        // Chat.WriteLine($"Player : {character.Name} is stacking : \t { templateAction.ToString()}  on slot  \t {equipSlot }");
-                        //   Chat.WriteLine($"Player : {character.Name} is stacking : \t { _observedEquips }  on slot  \t {equipSlot }");
-                    }
-                    else if (templateAction.Unknown2 == 6)
-                    {
-                        if (_observedEquips[character.Identity.Instance].Contains(equipSlot))
-                        {
-                            if (!_observedStacks.TryGetValue(character.Name, out _))
-                                _observedStacks.Add(character.Name, GetItemName(templateAction.ItemLowId, templateAction.ItemHighId, templateAction.Quality));
-                            //   Chat.WriteLine($"Player : {character.Name} is stacking : \t { _observedStacks }  on slot  \t {equipSlot }");
-                            //  Chat.WriteLine($"Player : {character.Name} is stacking : \t { _observedEquips }  on slot  \t {equipSlot }");
-                        }
-                        else
-                        {
-                            _observedEquips[character.Identity.Instance].Add(equipSlot);
-                            //  Chat.WriteLine($"Player : {character.Name} is stacking : \t { _observedStacks }  on slot  \t {equipSlot }");
-                            //   Chat.WriteLine($"Player : {character.Name} is stacking : \t { _observedEquips }  on slot  \t {equipSlot }");
-                        }
-                    }
-                }
-            }
-            TemplateActionMessage ayy = (TemplateActionMessage)n3Msg;
-            Dynel player = DynelManager.GetDynel(ayy.Identity);
-            TempItem tempItem = new TempItem(ayy.ItemLowId, ayy.ItemHighId, ayy.Quality);
-
-            if (ayy.Placement.Type == IdentityType.SimpleChar)
-            {
-                _ = DynelManager.GetDynel(ayy.Identity);
-
-                Chat.WriteLine($"Player: {player.Name } is Stacking :\t{tempItem.Name} !!!", ChatColor.Green);
-                Chat.WriteLine($"Player 's : {player.Name } stats are now  :\t{tempItem.GetStat((Stat)tempItem.LowId)} !!!", ChatColor.Green);
-            }
-        }
-
-
-        private unsafe string GetItemName(int lowId, int highId, int ql)
-        {
-            //0     Identity none = Identity.None;
-            IntPtr pEngine = N3Engine_t.GetInstance();
-
-            if (!DummyItem.CreateDummyItemID(lowId, highId, ql, out Identity dummyItemId))
-                throw new Exception($"Failed to create dummy item. LowId: {lowId}\tLowId: {highId}\tLowId: {ql}");
-
-            //  IntPtr pItem = N3EngineClientAnarchy_t.GetItemByTemplate(pEngine, dummyItemId, none);
-
-            // if (pItem == IntPtr.Zero)
-            throw new Exception($"DummyItem::DummyItem - Unable to locate item. LowId: {lowId}\tLowId: {highId}\tLowId: {ql}");
-
-            // return Utils.UnsafePointerToString((*(MemStruct*)pItem).Name);
-        }
-
-
-        [StructLayout(LayoutKind.Explicit, Pack = 0)]
-        private struct MemStruct
-        {
-            [FieldOffset(0x14)]
-            public Identity Identity;
-
-            [FieldOffset(0x9C)]
-            public IntPtr Name;
-        }
-
 
         private void StatStacker()
         {
