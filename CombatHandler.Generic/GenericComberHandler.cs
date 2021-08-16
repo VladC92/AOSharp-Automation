@@ -1031,6 +1031,14 @@ public enum StackItems
 
     CuirassoftheEight = 304481,
     PatchworkDefensiveDrone = 306002,
+    MiysNanoBodylvl1 = 268836,
+    MiysNanoBodylvl300 = 268837,
+    MiysNanosleeves= 268840,
+    NovaDillonArmorboots = 163941 , 
+    NovaDillonArmorgloves = 163947, 
+    NovaDillonArmorhelmet = 163949, 
+    NovaDillonArmorpants = 163951,  
+    NovaDillonArmorbody = 163945,  
 
 
 
