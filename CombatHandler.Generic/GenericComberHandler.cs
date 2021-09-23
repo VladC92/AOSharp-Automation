@@ -41,7 +41,7 @@ namespace CombatHandler.Generic
             Game.OnUpdate += OnUpdate;
             Game.TeleportEnded += TeleportEnded;
 
-            
+
             DynelManager.DynelSpawned += DynelSpawned;
 
             _perkLineLevels = Perk.GetPerkLineLevels(true);
@@ -351,6 +351,11 @@ namespace CombatHandler.Generic
                         stackEnabled = true;
                         Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
                         break;
+                    case "back":
+                        stackSlot = EquipSlot.Cloth_Back;
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
+                        break;
                     case "hud3":
                         stackEnabled = true;
                         stackSlot = EquipSlot.Weap_Hud3;
@@ -427,6 +432,7 @@ namespace CombatHandler.Generic
                         stackEnabled = true;
                         Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
                         break;
+
 
                     case "s":
                     case "stop":
@@ -900,8 +906,8 @@ namespace CombatHandler.Generic
             return true;
 
         }
-         
-        
+
+
 
         private bool Limber(PerkAction perkaction, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
         {
@@ -1033,12 +1039,21 @@ public enum StackItems
     PatchworkDefensiveDrone = 306002,
     MiysNanoBodylvl1 = 268836,
     MiysNanoBodylvl300 = 268837,
-    MiysNanosleeves= 268840,
-    NovaDillonArmorboots = 163941 , 
-    NovaDillonArmorgloves = 163947, 
-    NovaDillonArmorhelmet = 163949, 
-    NovaDillonArmorpants = 163951,  
-    NovaDillonArmorbody = 163945,  
+    MiysNanosleeves = 268840,
+    MiysNanosleeves1 = 268841,
+    MiysNanosBack = 270329,
+    MiysNanosBack300 = 270329,
+    NovaDillonArmorboots = 163941,
+    NovaDillonArmorgloves = 163947,
+    NovaDillonArmorhelmet = 163949,
+    NovaDillonArmorpants = 163951,
+    NovaDillonArmorbody = 163945,
+    miycloak = 270340,
+    miycloak1 = 270341,
+    HIGlasses = 216430,
+
+
+
 
 
 
