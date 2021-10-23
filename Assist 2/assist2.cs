@@ -9,9 +9,7 @@ using DynelManager = AOSharp.Core.DynelManager;
 using Vector3 = AOSharp.Common.GameData.Vector3;
 using System.Linq;
 using System.Threading;
-
-
-
+using System.Text;
 
 namespace Desu
 {
@@ -23,6 +21,7 @@ namespace Desu
         private List<SimpleChar> sidePlayers = new List<SimpleChar>();
         private List<SimpleChar> assistedPlayer = new List<SimpleChar>();
         private string currentlyAttacking = "";
+        private StringBuilder playerDetails = new StringBuilder();
 
         public override void Run(string pluginDir)
         {
@@ -212,55 +211,61 @@ namespace Desu
 
 
                 if (prof != Profession.Unknown)
-                
+
                     Chat.WriteLine($"Searching for profession : {prof}", ChatColor.DarkPink);
-                    foreach (SimpleChar p in DynelManager.Players)
+                foreach (SimpleChar p in DynelManager.Players)
+                {
+
+                    if (isProf == true)
                     {
+                        if (p.Profession == prof && p.Side != Side.Clan)
+                            Chat.WriteLine($" Players found : {p.Name} ", ChatColor.Green);
 
-                        if (isProf == true)
+                        _playersToHighlight.Add(p);
+
+
+                    }
+                    else
+                    {
+                        if (p.Name.ToLower().Contains(name))
                         {
-                            if (p.Profession == prof && p.Side != Side.Clan)
-                                Chat.WriteLine($" Players found : {p.Name} ", ChatColor.Green);
-
                             _playersToHighlight.Add(p);
+                            
+                            playerDetails.Append('-' , 10);
+                            Chat.WriteLine($"Name: {p.Name}", ChatColor.Green);
+                            playerDetails.Append('-', 10);
+                            Chat.WriteLine($"Profession: {p.Profession}", ChatColor.LightBlue);
+                            playerDetails.Append('-', 10);
+                            Chat.WriteLine($"Side: {p.Side}", ChatColor.LightBlue);
+                            playerDetails.Append('-', 10);
+                            Chat.WriteLine($"Level: {p.Level}", ChatColor.LightBlue);
+                            playerDetails.Append('-', 10);
+                            Chat.WriteLine($"Health: {p.Health}", ChatColor.LightBlue);
+                            playerDetails.Append('-', 10);
+                            Chat.WriteLine($"Nano: {p.Nano}", ChatColor.LightBlue);
 
+                            // This doesn't work well , so will comment it for now
+                            //  Chat.WriteLine($"Nano Resist: {p.GetStat(Stat.NanoResist)}" , ChatColor.Green);
+                            // Chat.WriteLine($"Mater Crea: {p.GetStat(Stat.MaterialCreation)}", ChatColor.Green);
+                            Chat.WriteLine("");
 
+                            return;
                         }
-                        else
-                        {
-                            if (p.Name.ToLower().Contains(name))
-                            {
-                                _playersToHighlight.Add(p);
-                                Chat.WriteLine("");
-                                Chat.WriteLine($"Name: {p.Name}", ChatColor.Green);
-                                Chat.WriteLine($"Profession: {p.Profession}", ChatColor.LightBlue);
-                                Chat.WriteLine($"Side: {p.Side}", ChatColor.LightBlue);
-                                Chat.WriteLine($"Level: {p.Level}", ChatColor.LightBlue);
-                                Chat.WriteLine($"Health: {p.Health}", ChatColor.LightBlue);
-                                Chat.WriteLine($"Nano: {p.Nano}", ChatColor.LightBlue);
-                               
-                                // This doesn't work well , so will comment it for now
-                                //  Chat.WriteLine($"Nano Resist: {p.GetStat(Stat.NanoResist)}" , ChatColor.Green);
-                                // Chat.WriteLine($"Mater Crea: {p.GetStat(Stat.MaterialCreation)}", ChatColor.Green);
-                                Chat.WriteLine("");
-
-                                return;
-                            }
-
-                        }
-
 
                     }
 
 
-                
-                    if (_playersToHighlight.Count == 0)
-                    {
-
-                        Chat.WriteLine($"Player or profession {param[0]} not found", ChatColor.Red);
-                    }
                 }
-            
+
+
+
+                if (_playersToHighlight.Count == 0)
+                {
+
+                    Chat.WriteLine($"Player or profession {param[0]} not found", ChatColor.Red);
+                }
+            }
+
 
             catch (Exception e)
             {
@@ -361,12 +366,15 @@ namespace Desu
 
                         // Save the player
                         player = p;
-
-                        Chat.WriteLine($"Assisting  {player.Name}  , " +
-                        $"\n Breed :{player.Breed} ,\n" +
-                        $" Health : {player.Health}  \n" +
-                        $" Nano :  { player.Nano} \n" +
-                        $" Profession : {player.Profession} ", ChatColor.Green);
+                        playerDetails.Append('-', 10);
+                        Chat.WriteLine($"Assisting : {p.Name}", ChatColor.Green);
+                        playerDetails.Append('-', 10);
+                        Chat.WriteLine($"Profession: {p.Profession}", ChatColor.LightBlue);
+                        playerDetails.Append('-', 10);
+                        Chat.WriteLine($"Health: {p.Health}", ChatColor.LightBlue);
+                        playerDetails.Append('-', 10);
+                        Chat.WriteLine($"Nano: {p.Nano}", ChatColor.LightBlue);
+                   
 
                         AssistAttack(player);
                         if (player.FightingTarget == null || !player.IsAttacking)
@@ -399,7 +407,7 @@ namespace Desu
                             }
 
                         }
-
+                       
                         Chat.WriteLine($"{player.Name} is targeting " +
                             "\n " + player.FightingTarget.Name + "\n" +
                       $" Breed {player.FightingTarget.Breed} \n" +
