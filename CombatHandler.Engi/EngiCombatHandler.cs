@@ -34,6 +34,8 @@ namespace CombatHandler.Engi
             RegisterPerkProcessor(PerkHash.QuickShot, DamagePerk);
             RegisterPerkProcessor(PerkHash.DoubleShot, DamagePerk);
             RegisterPerkProcessor(PerkHash.Deadeye, DamagePerk);
+            RegisterPerkProcessor(PerkHash.LEProcEngineerDroneMissiles, LEProc);
+            RegisterPerkProcessor(PerkHash.LEProcEngineerEnergyTransfer, LEProc);
 
             //Buffs
             RegisterSpellProcessor(RelevantNanos.CompositeAttribute, GenericBuff);
