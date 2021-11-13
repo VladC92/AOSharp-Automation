@@ -48,7 +48,8 @@ namespace CombatHandler.Generic
 
             RegisterPerkProcessor(PerkHash.Limber, Limber, CombatActionPriority.High);
             RegisterPerkProcessor(PerkHash.DanceOfFools, DanceOfFools, CombatActionPriority.High);
-
+            RegisterPerkProcessor(PerkHash.BioRegrowth, BioRegrowth);
+            RegisterPerkProcessor(PerkHash.BioRejuvenation, TeamHealPerk);
             RegisterPerkProcessor(PerkHash.Bore, TargetedDamagePerk);
             RegisterPerkProcessor(PerkHash.Crave, TargetedDamagePerk);
             RegisterPerkProcessor(PerkHash.NanoFeast, TargetedDamagePerk);
@@ -790,7 +791,7 @@ namespace CombatHandler.Generic
         private bool FountainOfLife(Spell spell, SimpleChar fightingtarget, ref (SimpleChar Target, bool ShouldSetTarget) actiontarget)
         {
             // Prioritize keeping ourself alive
-            if (DynelManager.LocalPlayer.HealthPercent <= 30)
+            if (DynelManager.LocalPlayer.HealthPercent <= 25)
             {
                 actiontarget.Target = DynelManager.LocalPlayer;
                 return true;
@@ -802,7 +803,7 @@ namespace CombatHandler.Generic
                 SimpleChar dyingTeamMember = DynelManager.Characters
                     .Where(c => c.IsAlive)
                     .Where(c => Team.Members.Select(t => t.Identity.Instance).Contains(c.Identity.Instance))
-                    .Where(c => c.HealthPercent < 30)
+                    .Where(c => c.HealthPercent < 25)
                     .OrderByDescending(c => c.GetStat(Stat.NumFightingOpponents))
                     .FirstOrDefault();
 
@@ -846,6 +847,68 @@ namespace CombatHandler.Generic
                 DynelManager.LocalPlayer.Pets.Attack(fightingtarget.Identity);
 
             return true;
+        }
+        private bool TeamHealPerk(PerkAction perkAction, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
+        {
+
+            if (!DynelManager.LocalPlayer.IsAttacking)
+                return false;
+
+            // Prioritize keeping ourself alive
+            if (DynelManager.LocalPlayer.HealthPercent <= 60)
+            {
+                actionTarget.Target = DynelManager.LocalPlayer;
+                return true;
+            }
+
+            // Try to keep our teammates alive if we're in a team
+            if (DynelManager.LocalPlayer.IsInTeam())
+            {
+                SimpleChar dyingTeamMember = DynelManager.Characters
+                    .Where(c => c.IsAlive)
+                    .Where(c => Team.Members.Select(t => t.Identity.Instance).Contains(c.Identity.Instance))
+                    .Where(c => c.HealthPercent <= 60)
+                    .OrderByDescending(c => c.GetStat(Stat.NumFightingOpponents))
+                    .FirstOrDefault();
+
+                if (dyingTeamMember != null)
+                {
+                    actionTarget.Target = dyingTeamMember;
+                    return true;
+                }
+            }
+            return false;
+        }
+        private bool BioRegrowth(PerkAction perkAction, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
+        {
+
+            if (!DynelManager.LocalPlayer.IsAttacking)
+                return false;
+
+            // Prioritize keeping ourself alive
+            if (DynelManager.LocalPlayer.HealthPercent <= 40)
+            {
+                actionTarget.Target = DynelManager.LocalPlayer;
+                return true;
+            }
+
+            // Try to keep our teammates alive if we're in a team
+            if (DynelManager.LocalPlayer.IsInTeam())
+            {
+                SimpleChar dyingTeamMember = DynelManager.Characters
+                    .Where(c => c.IsAlive)
+                    .Where(c => Team.Members.Select(t => t.Identity.Instance).Contains(c.Identity.Instance))
+                    .Where(c => c.HealthPercent <= 40)
+                    .OrderByDescending(c => c.GetStat(Stat.NumFightingOpponents))
+                    .FirstOrDefault();
+
+                if (dyingTeamMember != null)
+                {
+                    actionTarget.Target = dyingTeamMember;
+                    return true;
+                }
+            }
+            return false;
         }
 
         protected virtual bool TargetedDamagePerk(PerkAction perkaction, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)

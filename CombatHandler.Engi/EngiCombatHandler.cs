@@ -19,10 +19,8 @@ namespace CombatHandler.Engi
 
         public EngiCombatHandler()
         {
-            //Perks
-            RegisterPerkProcessor(PerkHash.BioRejuvenation, TeamHealPerk);
-            RegisterPerkProcessor(PerkHash.BioRegrowth, TeamHealPerk);
-            //RegisterPerkProcessor(PerkHash.BioShield, SelfBuffPerk);
+           
+           
             RegisterPerkProcessor(PerkHash.BioCocoon, SelfHealPerk);
 
             RegisterPerkProcessor(PerkHash.Energize, DamagePerk);
@@ -217,37 +215,7 @@ namespace CombatHandler.Engi
             return false;
         }
 
-        private bool TeamHealPerk(PerkAction perkAction, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
-        {
-
-            if (!DynelManager.LocalPlayer.IsAttacking)
-                return false;
-
-            // Prioritize keeping ourself alive
-            if (DynelManager.LocalPlayer.HealthPercent <= 60)
-            {
-                actionTarget.Target = DynelManager.LocalPlayer;
-                return true;
-            }
-
-            // Try to keep our teammates alive if we're in a team
-            if (DynelManager.LocalPlayer.IsInTeam())
-            {
-                SimpleChar dyingTeamMember = DynelManager.Characters
-                    .Where(c => c.IsAlive)
-                    .Where(c => Team.Members.Select(t => t.Identity.Instance).Contains(c.Identity.Instance))
-                    .Where(c => c.HealthPercent <= 60)
-                    .OrderByDescending(c => c.GetStat(Stat.NumFightingOpponents))
-                    .FirstOrDefault();
-
-                if (dyingTeamMember != null)
-                {
-                    actionTarget.Target = dyingTeamMember;
-                    return true;
-                }
-            }
-            return false;
-        }
+      
 
         private static class RelevantNanos
         {
