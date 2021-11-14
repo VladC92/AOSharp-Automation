@@ -1198,6 +1198,8 @@ public enum StackItems
     OfabAgentHelmet = 264287,
     PlatinumFiligreeRingsetwithaPerfectlyCutStarRuby = 244282,
     PlatinumFiligreeRingsetwithaPerfectlyCutStarRuby250 = 244288,
+    DustBrigadeBracerFirstEdition = 292566,
+    DustBrigadeBracerSecondEdition = 292565,
 
 
 
