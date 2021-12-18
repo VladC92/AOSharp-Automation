@@ -129,6 +129,7 @@ namespace CombatHandler.Generic
 
             Chat.RegisterCommand("stack", StackCommand);
             Chat.RegisterCommand("dupe", DupeCommand);
+            Chat.RegisterCommand("social", SocialEquipCommand);
 
         }
 
@@ -190,6 +191,64 @@ namespace CombatHandler.Generic
                     foreach (Container backpack in backpacks)
                     {
                         if (backpack.Slot.Instance != (int)EquipSlot.Social_Back && backpack.IsOpen)
+                        {
+                            //   Chat.WriteLine($"   Outer Bag - {backpack.Identity} - IsOpen:{backpack.IsOpen}{((backpack.IsOpen) ? $" - Items:{backpack.Items.Count}" : "")}");
+                            outerBag = backpack;
+                            outerBagFound = true;
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Chat.WriteLine(e.Message);
+            }
+        }
+        private void SocialEquipCommand(string command, string[] param, ChatWindow chatWindow)
+        {
+            try
+            {
+                if (param.Length == 0)
+                {
+
+                    List<Container> backpacks = Inventory.Backpacks;
+
+
+
+                    foreach (Container backpack in backpacks)
+                    {
+                        Chat.WriteLine($"Searching for bags....");
+                        if (backpack.Slot.Instance == (int)EquipSlot.Social_Head)
+                        {
+
+                            innerBag = backpack;
+                            innerBagFound = true;
+                        }
+
+
+
+                        if (innerBagFound && outerBagFound)
+                        {
+
+                            Identity bank = new Identity();
+                            bank.Instance = (int)EquipSlot.Social_Head;
+                            bank.Type = IdentityType.BankByRef;
+
+                            Network.Send(new ClientContainerAddItem()
+                            {
+                                Target = outerBag.Identity,
+                                Source = bank
+                            });
+                            return;
+                        }
+
+
+
+
+                    }
+                    foreach (Container backpack in backpacks)
+                    {
+                        if (backpack.Slot.Instance != (int)EquipSlot.Social_Head && backpack.IsOpen)
                         {
                             //   Chat.WriteLine($"   Outer Bag - {backpack.Identity} - IsOpen:{backpack.IsOpen}{((backpack.IsOpen) ? $" - Items:{backpack.Items.Count}" : "")}");
                             outerBag = backpack;
@@ -416,9 +475,17 @@ namespace CombatHandler.Generic
                         break;
                     case "all":
                         stackSlot = EquipSlot.Weap_Hud3;
+                        stackSlot = EquipSlot.Weap_Hud1;
+                        stackSlot = EquipSlot.Weap_Hud2;
+                        stackSlot = EquipSlot.Weap_Utils2;
+                        stackSlot = EquipSlot.Cloth_RightFinger;
+                        stackSlot = EquipSlot.Cloth_LeftFinger;
+                        stackSlot = EquipSlot.Cloth_RightArm;
+                        stackSlot = EquipSlot.Cloth_Body;
                         stackSlot = EquipSlot.Cloth_Neck;
-                        stackall = true;
-                        Chat.WriteLine("Stack enabled for hud3  and neck slots ! ", ChatColor.Green);
+
+                        stackEnabled = true;
+                        Chat.WriteLine("Stack enabled for all slots ", ChatColor.Green);
                         break;
 
                     case "rw":
@@ -433,7 +500,6 @@ namespace CombatHandler.Generic
                         stackEnabled = true;
                         Chat.WriteLine("Stack enabled for slot " + stackSlot.ToString(), ChatColor.Green);
                         break;
-
 
                     case "s":
                     case "stop":
@@ -556,7 +622,7 @@ namespace CombatHandler.Generic
                         int index = stackSlots.IndexOf(item.Slot.Instance);
                         bank.Instance = stackSlots.ElementAt(index);
                         if (stackLog == true)
-                            Chat.WriteLine($"Bank slot: {bank.Instance} :: Item: {item.Name} :: Bag slot: {stackBag.Slot}");
+                           // Chat.WriteLine($"Bank slot: {bank.Instance} :: Item: {item.Name} :: Bag slot: {stackBag.Slot}");
                         StripItem(bank, stackBag);
                         return;
                     }
@@ -572,6 +638,14 @@ namespace CombatHandler.Generic
 
             (int)EquipSlot.Cloth_Neck,
             (int)EquipSlot.Weap_Hud3,
+            (int)EquipSlot.Cloth_Feet,
+            (int)EquipSlot.Weap_Hud1,
+            (int)EquipSlot.Weap_Hud2,
+            (int)EquipSlot.Weap_Utils2,
+            (int)EquipSlot.Cloth_RightFinger,
+            (int)EquipSlot.Cloth_LeftFinger,
+            (int)EquipSlot.Cloth_RightArm,
+            (int)EquipSlot.Cloth_Body,
         };
 
             if (stackBag != null)
@@ -588,8 +662,8 @@ namespace CombatHandler.Generic
                         int index = stackSlots.IndexOf(item.Slot.Instance);
                         bank.Instance = stackSlots.ElementAt(index);
                         if (stackLog == true)
-                            Chat.WriteLine($"Bank slot: {bank.Instance} :: Item: {item.Name} :: Bag slot: {stackBag.Slot}");
-                        StripItem(bank, stackBag);
+                            // Chat.WriteLine($"Bank slot: {bank.Instance} :: Item: {item.Name} :: Bag slot: {stackBag.Slot}");
+                            StripItem(bank, stackBag);
                         return;
                     }
                     EquipItemAll(stackBag);
@@ -631,7 +705,19 @@ namespace CombatHandler.Generic
                 {
                     item.Equip(EquipSlot.Weap_Hud3);
                     item.Equip(EquipSlot.Cloth_Neck);
-                    break;
+                    item.Equip(EquipSlot.Cloth_Neck);
+                    item.Equip(EquipSlot.Weap_Hud3);
+                    item.Equip(EquipSlot.Cloth_Feet);
+                    item.Equip(EquipSlot.Weap_Hud1);
+                    item.Equip(EquipSlot.Weap_Hud2);
+                    item.Equip(EquipSlot.Weap_Utils2);
+                    item.Equip(EquipSlot.Cloth_RightFinger);
+                    item.Equip(EquipSlot.Cloth_LeftFinger);
+                    item.Equip(EquipSlot.Cloth_RightArm);
+                    item.Equip(EquipSlot.Cloth_Body);
+                    item.Equip(EquipSlot.Cloth_Body);
+
+
                 }
             }
         }
@@ -1114,6 +1200,7 @@ public enum StackItems
     miycloak = 270340,
     miycloak1 = 270341,
     HIGlasses = 216430,
+    PerfectedInfusedBrigadeBracer = 274551,
 
 
 
@@ -1147,6 +1234,9 @@ public enum StackItems
     ResearchAttunementDeviceMedicalLevelOne = 269407,
     ResearchAttunementDeviceCombatLevelOne = 269401,
     ResearchAttunementDeviceTradeskillLevelOne = 293693,
+    CombinedSharpshootersSleeves = 246697,
+
+
 
     //Clan Token Boards
     ClanAdvancementSunrise = 296369,
@@ -1161,6 +1251,15 @@ public enum StackItems
     ClanMeritsAwakenedDefenseParagon = 302914,
     ClanAdvancementTriumphantDoubleSun = 296380,
     ClanMeritsParagon = 257113,
+    DustBrigadeCreatorModule = 292608,
+    awakenedPads = 302725,
+    awakenedBoc = 302730,
+    awakenedChest = 302729,
+    awakenedGloves = 302722,
+    awakenedPants = 302727,
+    awakenedBoots = 302726,
+    awakenedSleeves = 302723,
+    awakenedSleeves1 = 302724,
 
 
     DocaholicRing = 288744,

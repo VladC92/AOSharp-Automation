@@ -39,26 +39,6 @@ namespace Desu
 
         
         }
-        private bool NanoPerk(Perk perk, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
-        {
-            if (DynelManager.LocalPlayer.NanoPercent < 30)
-                return true;
-
-            return false;
-        }
-        private bool RegainNano(Perk perk, SimpleChar fightingtarget, ref (SimpleChar Target, bool ShouldSetTarget) actiontarget)
-        {
-            if (fightingtarget == null)
-                return false;
-
-            if (DynelManager.LocalPlayer.MaxNano < 800)
-                return DynelManager.LocalPlayer.NanoPercent < 50;
-
-            return DynelManager.LocalPlayer.MissingNano > 800;
-        }
-
-
-
 
         private static class RelevantNanos
         {

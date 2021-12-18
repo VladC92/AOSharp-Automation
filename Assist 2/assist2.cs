@@ -18,7 +18,6 @@ namespace Desu
 
         SimpleChar player = null;
         private List<SimpleChar> _playersToHighlight = new List<SimpleChar>();
-        private List<SimpleChar> sidePlayers = new List<SimpleChar>();
         private List<SimpleChar> assistedPlayer = new List<SimpleChar>();
         private string currentlyAttacking = "";
         private StringBuilder playerDetails = new StringBuilder();
@@ -230,8 +229,8 @@ namespace Desu
                         if (p.Name.ToLower().Contains(name))
                         {
                             _playersToHighlight.Add(p);
-                            
-                            playerDetails.Append('-' , 10);
+
+                            playerDetails.Append('-', 10);
                             Chat.WriteLine($"Name: {p.Name}", ChatColor.Green);
                             playerDetails.Append('-', 10);
                             Chat.WriteLine($"Profession: {p.Profession}", ChatColor.LightBlue);
@@ -243,21 +242,13 @@ namespace Desu
                             Chat.WriteLine($"Health: {p.Health}", ChatColor.LightBlue);
                             playerDetails.Append('-', 10);
                             Chat.WriteLine($"Nano: {p.Nano}", ChatColor.LightBlue);
-
-                            // This doesn't work well , so will comment it for now
-                            //  Chat.WriteLine($"Nano Resist: {p.GetStat(Stat.NanoResist)}" , ChatColor.Green);
-                            // Chat.WriteLine($"Mater Crea: {p.GetStat(Stat.MaterialCreation)}", ChatColor.Green);
                             Chat.WriteLine("");
 
                             return;
                         }
 
                     }
-
-
                 }
-
-
 
                 if (_playersToHighlight.Count == 0)
                 {
@@ -314,15 +305,7 @@ namespace Desu
 
                     }
 
-                    //if (!player.FightingTarget.IsPlayer)
-                    //{
-                    //    Chat.WriteLine($"Fighting target is not a player", ChatColor.DarkPink);
-                    //    return;
-                    //}
-
                 }
-
-
 
             }
             catch (Exception e)
@@ -374,7 +357,7 @@ namespace Desu
                         Chat.WriteLine($"Health: {p.Health}", ChatColor.LightBlue);
                         playerDetails.Append('-', 10);
                         Chat.WriteLine($"Nano: {p.Nano}", ChatColor.LightBlue);
-                   
+
 
                         AssistAttack(player);
                         if (player.FightingTarget == null || !player.IsAttacking)
@@ -407,7 +390,7 @@ namespace Desu
                             }
 
                         }
-                       
+
                         Chat.WriteLine($"{player.Name} is targeting " +
                             "\n " + player.FightingTarget.Name + "\n" +
                       $" Breed {player.FightingTarget.Breed} \n" +
@@ -423,7 +406,6 @@ namespace Desu
             }
         }
 
-
         private void DrawPlayer(SimpleChar player)
         {
             _ = (int)Time.NormalTime;
@@ -435,9 +417,6 @@ namespace Desu
                     Debug.DrawSphere(player.Position, 1, DebuggingColor.LightBlue);
                     Debug.DrawLine(DynelManager.LocalPlayer.Position, player.Position, DebuggingColor.LightBlue);
 
-
-
-
                     if (player.FightingTarget != null)
                     {
                         Debug.DrawSphere(player.FightingTarget.Position, 1, DebuggingColor.Green);
@@ -446,8 +425,6 @@ namespace Desu
                     }
 
                 }
-
-
             }
 
             catch (Exception e)
@@ -491,7 +468,7 @@ namespace Desu
         }
         private void PvpKeyProfs()
         {
-            int time = (int)Time.NormalTime;
+            //   int time = (int)Time.NormalTime;
 
             foreach (SimpleChar player in DynelManager.Players)
             {
@@ -509,8 +486,10 @@ namespace Desu
                 }
                 else
                 {
-                    if (player.Buffs.Contains(new[] { 216382, 284620, 202732, 214879 }) && time % 2 == 0 && player.Side == Side.OmniTek && player.Level > 218)
+                    if (player.Buffs.Contains(new[] { 216382, 284620, 202732, 214879 }) && player.Side == Side.OmniTek && player.Level > 218)
                     {
+
+                        //&& time % 2 == 0 ---  We comment this bewcause we want the line to be constant instead of ticking on the player.
 
                         debuggingColor = DebuggingColor.Red;
 
@@ -520,82 +499,17 @@ namespace Desu
                     }
                     else
                     {
-
-                        debuggingColor = DebuggingColor.Yellow;
-                        Vector3 others = DebuggingColor.Purple;
-                        /*
-                            switch (player.Profession)
-                            {
-
-                                case Profession.Doctor:
-
-                                    break;
-
-                                case Profession.Trader:
-
-                                    break;
-
-                                case Profession.Engineer:
-
-                                    break;
-
-                                case Profession.NanoTechnician:
-
-                                    break;
-
-                                case Profession.MartialArtist:
-
-                                    break;
-                                case Profession.Agent:
-
-                                    break;
-                                case Profession.Unknown:
-
-
-                                    break;
-
-                                case Profession.Adventurer:
-
-
-                                    break;
-
-                                case Profession.Shade:
-
-
-                                    break;
-
-                                case Profession.Enforcer:
-
-
-                                    break;
-
-                                case Profession.Fixer:
-
-
-                                    break;
-
-                                case Profession.Bureaucrat:
-
-
-                                    break;
-
-                                case Profession.Keeper:
-
-
-
-                                    break;
-                        }
-                        */
-
-
                         switch (player.Side)
                         {
-
                             case Side.OmniTek:
 
-                                // we draw lines on all omni character that are higher than lvl 218
 
-                                if (player.Level > 218)
+
+                                debuggingColor = DebuggingColor.Yellow;
+
+                                // we draw lines on all omni characters that are higher than lvl 218
+
+                                if (player.Side == Side.OmniTek && player.Level > 218)
                                 {
                                     Debug.DrawSphere(player.Position, 1, debuggingColor);
                                     Debug.DrawLine(DynelManager.LocalPlayer.Position, player.Position, debuggingColor);
@@ -604,6 +518,8 @@ namespace Desu
                                 }
 
                                 break;
+
+
                         }
                     }
                 }

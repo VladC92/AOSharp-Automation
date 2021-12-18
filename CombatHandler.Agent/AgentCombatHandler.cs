@@ -19,15 +19,17 @@ namespace Desu
             //Perks
 
             RegisterPerkProcessor(PerkHash.ArmorPiercingShot, TargetedDamagePerk);
-            RegisterPerkProcessor(PerkHash.ConcussiveShot, TargetedDamagePerk);
-            RegisterPerkProcessor(PerkHash.FindTheFlaw, TargetedDamagePerk);
+            RegisterPerkProcessor(PerkHash.ConcussiveShot, ConcussiveShot);
+            RegisterPerkProcessor(PerkHash.FindTheFlaw, ConcussiveShot);
+            RegisterPerkProcessor(PerkHash.SnipeShot1, DamagePerk);
+            RegisterPerkProcessor(PerkHash.CalledShot, DamagePerk);
             RegisterPerkProcessor(PerkHash.TheShot, TargetedDamagePerk);
             RegisterPerkProcessor(PerkHash.DeathStrike, TargetedDamagePerk);
             RegisterPerkProcessor(PerkHash.PinpointStrike, TargetedDamagePerk);
             RegisterPerkProcessor(PerkHash.SoftenUp, TargetedDamagePerk);
             RegisterPerkProcessor(PerkHash.Assassinate, TargetedDamagePerk);
             RegisterPerkProcessor(PerkHash.Tranquilizer, TargetedDamagePerk);
-            RegisterPerkProcessor(PerkHash.ShadowBullet, TargetedDamagePerk);
+            RegisterPerkProcessor(PerkHash.ShadowBullet, DamagePerk);
             RegisterPerkProcessor(PerkHash.NightKiller, TargetedDamagePerk);
             RegisterPerkProcessor(PerkHash.SilentPlague, TargetedDamagePerk);
             RegisterPerkProcessor(PerkHash.Recalibrate, TargetedDamagePerk);
@@ -112,6 +114,14 @@ namespace Desu
             }
 
             return true;
+        }
+        private bool ConcussiveShot(PerkAction perkaction, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
+        {
+            if (DynelManager.LocalPlayer.IsAttacking)
+
+                return true;
+
+            return false;
         }
 
 

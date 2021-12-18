@@ -43,6 +43,8 @@ namespace Desu
             RegisterSpellProcessor(RelevantNanos.ImprovedQuantumUncertanity, GenericBuff);
             RegisterSpellProcessor(RelevantNanos.UnstoppableKiller, GenericBuff);
             RegisterSpellProcessor(RelevantNanos.UmbralWranglerPremium, GenericBuff);
+            RegisterSpellProcessor(RelevantNanos.NanobotAegis, NanobotAegis);
+            RegisterSpellProcessor(RelevantNanos.SubprimeVitalityMortgage, SubprimeVitalityMortgage);
 
             //Team Buffs
             RegisterSpellProcessor(RelevantNanos.QuantumUncertanity, TeamBuff);
@@ -51,15 +53,15 @@ namespace Desu
             RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.NanoPointHeals).OrderByStackingOrder(), TeamNanoHeal);
 
             //AC Drains/Nanoline
-            RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.TraderDebuffACNanos).OrderByStackingOrder(), TraderACDrain);
-            RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.TraderACTransferTargetDebuff_Draw).OrderByStackingOrder(), TraderACDrain);
-            RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.TraderACTransferTargetDebuff_Siphon).OrderByStackingOrder(), TraderACDrain);
-            RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.DebuffNanoACHeavy).OrderByStackingOrder(), TraderACDrain);
+            //   RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.TraderDebuffACNanos).OrderByStackingOrder(), TraderACDrain);
+            //  RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.TraderACTransferTargetDebuff_Draw).OrderByStackingOrder(), TraderACDrain);
+            //  RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.TraderACTransferTargetDebuff_Siphon).OrderByStackingOrder(), TraderACDrain);
+            //   RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.DebuffNanoACHeavy).OrderByStackingOrder(), TraderACDrain);
 
             //AAO/AAD/Damage Drains
-            RegisterSpellProcessor(RelevantNanos.DivestDamage, LEDrain);
-            RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.TraderAADDrain).OrderByStackingOrder(), LEDrain);
-            RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.TraderAAODrain).OrderByStackingOrder(), LEDrain);
+            // RegisterSpellProcessor(RelevantNanos.DivestDamage, LEDrain);
+            RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.TraderAADDrain).OrderByStackingOrder(), LEDrainAAD);
+            RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.TraderAAODrain).OrderByStackingOrder(), LEDrainAAO);
 
             //Deprive/Ransack Drains
             RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.TraderSkillTransferTargetDebuff_Deprive), DepriveDrain);
@@ -82,6 +84,8 @@ namespace Desu
             public const int UnstoppableKiller = 275846;
             public const int DivestDamage = 273407;
             public const int UmbralWranglerPremium = 235291;
+            public const int NanobotAegis = 302074;
+            public const int SubprimeVitalityMortgage = 302401;
         }
 
         private static class RelevantItems
@@ -89,20 +93,35 @@ namespace Desu
             public const int DreadlochEnduranceBooster = 267168;
             public const int DreadlochEnduranceBoosterNanomageEdition = 267167;
         }
+        private bool NanobotAegis(Spell spell, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
+        {
+            actionTarget.ShouldSetTarget = false;
+            return DynelManager.LocalPlayer.HealthPercent < 60;
+        }
+        private bool SubprimeVitalityMortgage(Spell spell, SimpleChar fightingtarget, ref (SimpleChar Target, bool ShouldSetTarget) actiontarget)
+        {
+            // Prioritize keeping ourself alive
+            if (DynelManager.LocalPlayer.HealthPercent <= 35)
+            {
+                actiontarget.Target = DynelManager.LocalPlayer;
+                return true;
 
+            }
+            return false;
+        }
         private bool RansackDrain(Spell spell, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
         {
-            if(fightingTarget == null)
+            if (fightingTarget == null)
             {
                 return false;
             }
-
-            if(DynelManager.LocalPlayer.Buffs.Find(NanoLine.TraderSkillTransferCasterBuff_Ransack, out Buff buff))
+            foreach (Buff buff in fightingTarget.Buffs)
             {
-                if(buff.RemainingTime > 5)
+                if (spell.Nanoline == buff.Nanoline && fightingTarget.Buffs.Contains(NanoLine.TraderSkillTransferTargetDebuff_Ransack) && buff.RemainingTime > 1)
                 {
                     return false;
                 }
+
             }
             return true;
         }
@@ -113,31 +132,55 @@ namespace Desu
             {
                 return false;
             }
-
-            if (DynelManager.LocalPlayer.Buffs.Find(NanoLine.TraderSkillTransferCasterBuff_Deprive, out Buff buff))
+            foreach (Buff buff in fightingTarget.Buffs)
             {
-                if (buff.RemainingTime > 2)
+                if (spell.Nanoline == buff.Nanoline && fightingTarget.Buffs.Contains(NanoLine.TraderSkillTransferTargetDebuff_Deprive) && buff.RemainingTime > 1)
                 {
                     return false;
                 }
+
             }
             return true;
         }
 
-        private bool LEDrain(Spell spell, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
+        private bool LEDrainAAD(Spell spell, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
         {
             // Check if we are fighting and if debuffing is enabled
-            if (fightingTarget == null || !_menu.GetBool("UseLEDrains"))
+            if (fightingTarget == null)
                 return false;
 
-            return Debuff(spell, fightingTarget, ref actionTarget);
+            foreach (Buff buff in fightingTarget.Buffs)
+            {
+                if (spell.Nanoline == buff.Nanoline && fightingTarget.Buffs.Contains(NanoLine.TraderAADDrain) && buff.RemainingTime > 1)
+                {
+                    return false;
+                }
+
+            }
+            return true;
+        }
+        private bool LEDrainAAO(Spell spell, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
+        {
+            // Check if we are fighting and if debuffing is enabled
+            if (fightingTarget == null)
+                return false;
+            foreach (Buff buff in fightingTarget.Buffs)
+            {
+                if (spell.Nanoline == buff.Nanoline && fightingTarget.Buffs.Contains(NanoLine.TraderAAODrain) && buff.RemainingTime > 1)
+                {
+                    return false;
+                }
+
+            }
+            return true;
+
         }
 
         private bool TeamNanoHeal(Spell spell, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
         {
-            foreach(Buff buff in DynelManager.LocalPlayer.Buffs)
+            foreach (Buff buff in DynelManager.LocalPlayer.Buffs)
             {
-                if(buff.Nanoline == NanoLine.NanoPointHeals)
+                if (buff.Nanoline == NanoLine.NanoPointHeals)
                 {
                     return false;
                 }
@@ -162,18 +205,9 @@ namespace Desu
             return false;
         }
 
-        private bool TraderACDrain(Spell spell, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
-        {
-            // Check if we are fighting and if debuffing is enabled
-            if (fightingTarget == null || !_menu.GetBool("UseACDrainsDebuffs"))
-                return false;
-
-            return Debuff(spell, fightingTarget, ref actionTarget);
-        }
-
         private bool Debuff(Spell spell, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
         {
-            if(fightingTarget == null)
+            if (fightingTarget == null)
             {
                 return false;
             }
