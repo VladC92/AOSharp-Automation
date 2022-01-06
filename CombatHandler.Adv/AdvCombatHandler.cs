@@ -46,8 +46,9 @@ namespace Desu
             RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.ArmorBuff).OrderByStackingOrder(), GenericBuff);
             RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.AimedShotBuffs).OrderByStackingOrder(), GenericBuff);
             RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.DamageBuffs_LineA).OrderByStackingOrder(), GenericBuff);
-            RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.SingleTargetHealing).OrderByStackingOrder(), Heal);
+          //  RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.SingleTargetHealing).OrderByStackingOrder(), Heal);
             RegisterSpellProcessor(RelevantNanos.InvocationofthePhoenix, CompleteHeal, CombatActionPriority.High);
+            RegisterSpellProcessor(RelevantNanos.BeautyofLife, Heal);
 
 
 
@@ -61,7 +62,7 @@ namespace Desu
         private bool Heal(Spell spell, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
         {
             // Prioritize keeping ourself alive
-            if (DynelManager.LocalPlayer.HealthPercent <= 80)
+            if (DynelManager.LocalPlayer.HealthPercent <= 70)
             {
                 actionTarget.Target = DynelManager.LocalPlayer;
                 return true;
@@ -89,7 +90,7 @@ namespace Desu
         private bool CompleteHeal(Spell spell, SimpleChar fightingTarget, ref (SimpleChar Target, bool ShouldSetTarget) actionTarget)
         {
             // Prioritize keeping ourself alive
-            if (DynelManager.LocalPlayer.HealthPercent <= 50)
+            if (DynelManager.LocalPlayer.HealthPercent <= 30)
             {
                 actionTarget.Target = DynelManager.LocalPlayer;
                 return true;
@@ -100,7 +101,7 @@ namespace Desu
             {
                 SimpleChar dyingTeamMember = DynelManager.Characters
                     .Where(c => Team.Members.Select(t => t.Identity.Instance).Contains(c.Identity.Instance))
-                    .Where(c => c.HealthPercent <= 50)
+                    .Where(c => c.HealthPercent <= 30)
                     .OrderByDescending(c => c.GetStat(Stat.NumFightingOpponents))
                     .FirstOrDefault();
 
@@ -120,6 +121,7 @@ namespace Desu
             public const int OneWithNature = 136674;
             public const int PlayfulCub = 85062;
             public const int LycanthropicDexterity = 302235;
+            public const int BeautyofLife = 223167;
 
         }
 
