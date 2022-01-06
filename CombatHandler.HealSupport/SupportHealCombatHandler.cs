@@ -17,8 +17,10 @@ namespace Desu
             //This needs work 
             RegisterSpellProcessor(RelevantNanos.Ubt, Ubt);
             RegisterSpellProcessor(RelevantNanos.CompleteHealing, CompleteHeal , CombatActionPriority.High);
-           RegisterSpellProcessor(RelevantNanos.LifegivingElixir, LifegivingElixir);
+            RegisterSpellProcessor(RelevantNanos.InvocationofthePhoenix, CompleteHeal , CombatActionPriority.High);   
            RegisterSpellProcessor(RelevantNanos.BODILY_INV, BI, CombatActionPriority.High);
+           RegisterSpellProcessor(RelevantNanos.OneWithNature, BI, CombatActionPriority.High);
+           RegisterSpellProcessor(RelevantNanos.LifegivingElixir, LifegivingElixir, CombatActionPriority.High);
             RegisterSpellProcessor(RelevantNanos.FountainOfLife, FountainOfLife  , CombatActionPriority.Medium);
             RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.SingleTargetHealing).OrderByStackingOrder(), SingleTargetHeal, CombatActionPriority.Medium);
 
@@ -193,6 +195,8 @@ namespace Desu
             public const int Ubt = 99577;
             public const int Bullseye = 275823;
             public const int CompleteHealing = 28650;
+            public const int InvocationofthePhoenix = 136672;
+            public const int OneWithNature = 136674;
             public const int LifegivingElixir = 43878;
             public const int BODILY_INV = 223299;
             public const int FountainOfLife = 302907;
