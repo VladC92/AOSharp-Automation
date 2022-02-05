@@ -77,10 +77,6 @@ namespace Desu
             //Items
             RegisterItemProcessor(Tattoo, Tattoo, TattooItem, CombatActionPriority.High);
 
-            RegisterSpellProcessor(CompositeAttribute, GenericBuff);
-            RegisterSpellProcessor(CompositeNano, GenericBuff);
-            RegisterSpellProcessor(CompositeMelee, GenericBuff);
-            RegisterSpellProcessor(CompositeMeleeSpec, GenericBuff);
             RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.AgilityBuff).OrderByStackingOrder(), GenericBuff);
             RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.ConcealmentBuff).OrderByStackingOrder(), GenericBuff);
             RegisterSpellProcessor(Spell.GetSpellsForNanoline(NanoLine.FastAttackBuffs).OrderByStackingOrder(), GenericBuff);
